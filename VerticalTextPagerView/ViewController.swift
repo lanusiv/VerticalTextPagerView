@@ -22,7 +22,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIPopoverControlle
     
     var scrollFeedbackFromOtherControl: Bool!
     
-    var selectedSampleName: String = "Credits.xml"
+    var selectedSampleName: String = "Article.xml"
     
     //    var samplesController: SamplesViewController!
     
@@ -72,7 +72,9 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIPopoverControlle
         
         //        previousPageBtn.isEnabled = false
         
-        pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: "Article.xml"), withDelegate: self)
+        pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: selectedSampleName), withDelegate: self)
+        
+        self.title = selectedSampleName.components(separatedBy: ".")[0]
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -84,6 +86,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, UIPopoverControlle
     func samplesController(_ controller: SamplesViewController, didSelectString fileName: String) {
         self.pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: fileName), withDelegate: self)
         selectedSampleName = fileName
+        self.title = selectedSampleName.components(separatedBy: ".")[0]
         controller.dismiss(animated: true)
     }
     

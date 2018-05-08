@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="n7N-Hi-zV9">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -11,7 +11,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--VerticalTextPagerView-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="VerticalTextPagerView" customModuleProvider="target" sceneMemberID="viewController">
@@ -20,7 +20,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nWX-ng-R2R">
-                                <rect key="frame" x="0.0" y="20" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="44"/>
                                 <items>
                                     <barButtonItem title="Samples" id="7aq-fX-O5Q">
                                         <connections>
@@ -29,10 +29,15 @@
                                             </segue>
                                         </connections>
                                     </barButtonItem>
+                                    <barButtonItem title="Demos" id="AC9-xw-5mf">
+                                        <connections>
+                                            <segue destination="hY0-Rp-PUD" kind="show" id="YMm-de-eSZ"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aRO-Ko-yv7" customClass="PagerView" customModule="VerticalTextPagerView" customModuleProvider="target">
-                                <rect key="frame" x="20" y="72" width="374" height="644"/>
+                                <rect key="frame" x="20" y="116" width="374" height="600"/>
                             </scrollView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -47,6 +52,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <navigationItem key="navigationItem" title="VerticalTextPagerView" id="ahA-Vy-y6S"/>
                     <connections>
                         <outlet property="pagerView" destination="aRO-Ko-yv7" id="6QP-EK-oAK"/>
                         <outlet property="samplesBtn" destination="7aq-fX-O5Q" id="erT-Zm-paz"/>
@@ -55,7 +61,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="136.80000000000001" y="132.68365817091455"/>
+            <point key="canvasLocation" x="1043.4782608695652" y="132.06521739130434"/>
         </scene>
         <!--Samples View Controller-->
         <scene sceneID="uyx-fc-O4j">
@@ -84,7 +90,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uyt-jR-giz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1824.8" y="132.68365817091455"/>
+            <point key="canvasLocation" x="2731.8840579710145" y="132.06521739130434"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="kpA-jH-WtL">
@@ -102,7 +108,53 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="61J-aQ-X0P" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="885.60000000000002" y="132.68365817091455"/>
+            <point key="canvasLocation" x="1792.753623188406" y="132.06521739130434"/>
+        </scene>
+        <!--CoreText Demo-->
+        <scene sceneID="0Ru-jG-M9u">
+            <objects>
+                <viewController id="hY0-Rp-PUD" customClass="CoreTextDemoViewController" customModule="VerticalTextPagerView" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="by7-rB-D67">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MkO-HV-vgc" customClass="CTSelectionView" customModule="VerticalTextPagerView" customModuleProvider="target">
+                                <rect key="frame" x="20" y="72" width="374" height="644"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="MkO-HV-vgc" firstAttribute="top" secondItem="y3L-mL-r49" secondAttribute="top" constant="8" id="2Im-Mj-phZ"/>
+                            <constraint firstAttribute="bottom" secondItem="MkO-HV-vgc" secondAttribute="bottom" constant="20" symbolic="YES" id="8ig-Qk-96y"/>
+                            <constraint firstItem="MkO-HV-vgc" firstAttribute="leading" secondItem="by7-rB-D67" secondAttribute="leadingMargin" id="K7w-Pc-0tM"/>
+                            <constraint firstItem="MkO-HV-vgc" firstAttribute="trailing" secondItem="by7-rB-D67" secondAttribute="trailingMargin" id="O7c-mU-vfd"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="y3L-mL-r49"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="CoreText Demo" id="7Y4-5e-3gQ"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WAG-lO-ZJc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1043" y="1020"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Jmd-hA-x25">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="n7N-Hi-zV9" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="DbN-n0-mOf">
+                        <rect key="frame" x="0.0" y="20" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="NeY-bG-Je8"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="30z-96-KFm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="136.23188405797103" y="132.06521739130434"/>
         </scene>
     </scenes>
 </document>
