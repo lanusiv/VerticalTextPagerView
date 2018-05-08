@@ -525,6 +525,7 @@ class PagerView: UIScrollView, DocumentPager {
         
         let layer: CALayer = CALayer()
         //        theLayer = [CALayer layer];
+        layer.contentsScale = UIScreen.main.scale
         
         let bounds = ctView.bounds
         layer.position = CGPoint(x: bounds.size.width/2.0, y: bounds.size.height/2.0)

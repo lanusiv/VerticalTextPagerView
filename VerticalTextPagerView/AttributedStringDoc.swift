@@ -299,7 +299,6 @@ class AttributedStringDoc: NSObject {
                             
 //                            let font1 = CTFontCreateWithName((CFStringRef)[(NSArray*)obj objectAtIndex:0], [(NSNumber*)[(NSArray*)obj objectAtIndex:1] floatValue], NULL)
                             let font = CTFontCreateWithName(fontName as CFString, fontSize, nil)
-                            
                             attrString.addAttribute(.font, value: font, range: range)
                         } else if kCTForegroundColorAttributeName as String == key, let colorArray = value as? [CGFloat] {
                             let color = CreateColorFromRGBComponentsArray(colorArray)
