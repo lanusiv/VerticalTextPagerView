@@ -10,11 +10,16 @@ import UIKit
 
 protocol DocumentPager {
     
-    // MARK: public behavior
+    // Data source and entry point for PagerView
+    // Reset scroll view with new document and delegate
+    func reset(doc: AttributedStringDoc)
     
     // Change to next/previous page
     func pageUp()
     func pageDown()
+    
+    // Set currently displayed page
+    func setPage(_ pageToDisplay: Int)
     
     // Re-layout text for whole document
     func relayoutDoc()
@@ -28,31 +33,17 @@ protocol DocumentPager {
     // Mark page as needing refresh on next load
     func pageNeedsDisplay(_ pageNumber: Int)
     
-    // Set currently displayed page
-    func setPage(_ pageToDisplay: Int)
-    
     // Get page for given document text string offset
     func pageForStringOffset(_ offset: Int) -> Int
     
     // Get document text string range for current page
     func stringRangeForCurrentPage() -> NSRange?
     
-    // NSObject:description override (returns document name)
-//    - (NSString *)description;
-    
-    // Reset scroll view with new document and delegate
-//    - (void)reset:(AttributedStringDoc*)theDoc withDelegate:(id)scrollViewDelegate;
-    func reset(doc: AttributedStringDoc)
-    
     // Selection handling (for user frame selections)
-//    - (void)addSelectionRange:(NSRange)range;
-//    - (void)clearSelectionRanges;
     func addSelectionRange(range: NSRange)
     func clearSelectionRanges()
     
     // Change document with overriding font/font features
-//    - (void)fontFamilyChange:(NSString*)fontFamilyName;
-//    - (void)optionsChange:(NSString*)optionName;
     func fontFamilyChange(fontFamilyName: String)
     func optionsChange(optionName: String)
 
@@ -69,8 +60,7 @@ class CoreTextViewFrameInfo: NSObject {
     var setter: CTFramesetter?
     var frame: CTFrame?
     var stringRange: NSRange = NSRange(location: 0, length: 0)
-//    var doc: Any?
-    var value: Any?
+    var value: Any? // store text, which may be any of there kind of texts: AttributedStringDoc for ASDFrameType.textFlow, NSAttributedString for ASDFrameType.text, and file path(string) for ASDFrameType.picture
     
     override init() {
         super.init()
@@ -86,15 +76,6 @@ class CoreTextViewFrameInfo: NSObject {
         self.stringRange.length = 0
         self.stringOffsetForSetter = 0
     }
-    
-//    func initWithType(type: ASDFrameType, andPath path: CGPath) {
-//        self.frameType = type
-//        self.path = path
-//
-//        self.stringRange.location = 0
-//        self.stringRange.length = 0
-//        self.stringOffsetForSetter = 0
-//    }
     
     override var description: String {
         return "<CoreTextViewFrameInfo> type: \(self.frameType), path: \(String(describing: self.path))"
@@ -259,9 +240,6 @@ class CoreTextViewPageInfo: NSObject {
         self.rangeStart = rangeStart
         self.rangeEnd = rangeEnd
         self.pageLayer = layer
-//        self.needsRedrawOnLoad = false
-//        self.needsReLayout = false
-//        self.lastFreeFlowFrame = nil;
     }
     
     convenience init(layer: CALayer, pageNumber: Int) {
