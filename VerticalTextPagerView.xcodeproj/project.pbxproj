@@ -7,6 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E24B59D20A14BC3001273E2 /* demo1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59220A14BC2001273E2 /* demo1.txt */; };
+		4E24B59E20A14BC3001273E2 /* Credits.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59320A14BC2001273E2 /* Credits.xml */; };
+		4E24B59F20A14BC3001273E2 /* Features.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59420A14BC3001273E2 /* Features.xml */; };
+		4E24B5A020A14BC3001273E2 /* US Founding Docs.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59520A14BC3001273E2 /* US Founding Docs.xml */; };
+		4E24B5A120A14BC3001273E2 /* demo2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59620A14BC3001273E2 /* demo2.txt */; };
+		4E24B5A220A14BC3001273E2 /* FrameDrawing.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59720A14BC3001273E2 /* FrameDrawing.xml */; };
+		4E24B5A320A14BC3001273E2 /* Article.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59820A14BC3001273E2 /* Article.xml */; };
+		4E24B5A420A14BC3001273E2 /* NSAttributedString Reference.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59920A14BC3001273E2 /* NSAttributedString Reference.xml */; };
+		4E24B5A520A14BC3001273E2 /* demo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59A20A14BC3001273E2 /* demo.txt */; };
+		4E24B5A620A14BC3001273E2 /* Splash.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59B20A14BC3001273E2 /* Splash.xml */; };
+		4E24B5A720A14BC3001273E2 /* Splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B59C20A14BC3001273E2 /* Splash.png */; };
+		4E24B5AD20A14BEF001273E2 /* VeraMoIt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5A920A14BEF001273E2 /* VeraMoIt.ttf */; };
+		4E24B5AE20A14BEF001273E2 /* VeraMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5AA20A14BEF001273E2 /* VeraMono.ttf */; };
+		4E24B5AF20A14BEF001273E2 /* VeraMoBd.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5AB20A14BEF001273E2 /* VeraMoBd.ttf */; };
+		4E24B5B020A14BEF001273E2 /* VeraMoBI.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5AC20A14BEF001273E2 /* VeraMoBI.ttf */; };
+		4E24B5B820A14C26001273E2 /* 006.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5B220A14C26001273E2 /* 006.png */; };
+		4E24B5B920A14C26001273E2 /* 003.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5B320A14C26001273E2 /* 003.gif */; };
+		4E24B5BA20A14C26001273E2 /* 005.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5B420A14C26001273E2 /* 005.gif */; };
+		4E24B5BB20A14C26001273E2 /* 004.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5B520A14C26001273E2 /* 004.gif */; };
+		4E24B5BC20A14C26001273E2 /* 001.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5B620A14C26001273E2 /* 001.gif */; };
+		4E24B5BD20A14C26001273E2 /* 002.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5B720A14C26001273E2 /* 002.gif */; };
+		4EA1606120A1491800A4E3F5 /* CTSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */; };
+		4EA1606220A1491800A4E3F5 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605D20A1491800A4E3F5 /* DemoData.swift */; };
+		4EA1606320A1491800A4E3F5 /* CTView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605E20A1491800A4E3F5 /* CTView.swift */; };
+		4EA1606420A1491800A4E3F5 /* TextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605F20A1491800A4E3F5 /* TextParser.swift */; };
+		4EA1606520A1491800A4E3F5 /* LayoutDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606020A1491800A4E3F5 /* LayoutDemoView.swift */; };
+		4EA1606A20A1493500A4E3F5 /* CoreTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606620A1493500A4E3F5 /* CoreTextView.swift */; };
+		4EA1606B20A1493500A4E3F5 /* PagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606720A1493500A4E3F5 /* PagerView.swift */; };
+		4EA1606C20A1493500A4E3F5 /* SamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606820A1493500A4E3F5 /* SamplesViewController.swift */; };
+		4EA1606D20A1493500A4E3F5 /* AttributedStringDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606920A1493500A4E3F5 /* AttributedStringDoc.swift */; };
 		4EC1051A20A1475F00AE51F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC1051920A1475F00AE51F1 /* AppDelegate.swift */; };
 		4EC1051C20A1475F00AE51F1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC1051B20A1475F00AE51F1 /* ViewController.swift */; };
 		4EC1051F20A1475F00AE51F1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4EC1051D20A1475F00AE51F1 /* Main.storyboard */; };
@@ -15,6 +45,36 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E24B59220A14BC2001273E2 /* demo1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = demo1.txt; sourceTree = "<group>"; };
+		4E24B59320A14BC2001273E2 /* Credits.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Credits.xml; sourceTree = "<group>"; };
+		4E24B59420A14BC3001273E2 /* Features.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Features.xml; sourceTree = "<group>"; };
+		4E24B59520A14BC3001273E2 /* US Founding Docs.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "US Founding Docs.xml"; sourceTree = "<group>"; };
+		4E24B59620A14BC3001273E2 /* demo2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = demo2.txt; sourceTree = "<group>"; };
+		4E24B59720A14BC3001273E2 /* FrameDrawing.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FrameDrawing.xml; sourceTree = "<group>"; };
+		4E24B59820A14BC3001273E2 /* Article.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Article.xml; sourceTree = "<group>"; };
+		4E24B59920A14BC3001273E2 /* NSAttributedString Reference.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "NSAttributedString Reference.xml"; sourceTree = "<group>"; };
+		4E24B59A20A14BC3001273E2 /* demo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = demo.txt; sourceTree = "<group>"; };
+		4E24B59B20A14BC3001273E2 /* Splash.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Splash.xml; sourceTree = "<group>"; };
+		4E24B59C20A14BC3001273E2 /* Splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Splash.png; sourceTree = "<group>"; };
+		4E24B5A920A14BEF001273E2 /* VeraMoIt.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = VeraMoIt.ttf; sourceTree = "<group>"; };
+		4E24B5AA20A14BEF001273E2 /* VeraMono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = VeraMono.ttf; sourceTree = "<group>"; };
+		4E24B5AB20A14BEF001273E2 /* VeraMoBd.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = VeraMoBd.ttf; sourceTree = "<group>"; };
+		4E24B5AC20A14BEF001273E2 /* VeraMoBI.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = VeraMoBI.ttf; sourceTree = "<group>"; };
+		4E24B5B220A14C26001273E2 /* 006.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 006.png; sourceTree = "<group>"; };
+		4E24B5B320A14C26001273E2 /* 003.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 003.gif; sourceTree = "<group>"; };
+		4E24B5B420A14C26001273E2 /* 005.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 005.gif; sourceTree = "<group>"; };
+		4E24B5B520A14C26001273E2 /* 004.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 004.gif; sourceTree = "<group>"; };
+		4E24B5B620A14C26001273E2 /* 001.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 001.gif; sourceTree = "<group>"; };
+		4E24B5B720A14C26001273E2 /* 002.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 002.gif; sourceTree = "<group>"; };
+		4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CTSelectionView.swift; path = "Text Classes/CTSelectionView.swift"; sourceTree = "<group>"; };
+		4EA1605D20A1491800A4E3F5 /* DemoData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DemoData.swift; path = "Text Classes/DemoData.swift"; sourceTree = "<group>"; };
+		4EA1605E20A1491800A4E3F5 /* CTView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CTView.swift; path = "Text Classes/CTView.swift"; sourceTree = "<group>"; };
+		4EA1605F20A1491800A4E3F5 /* TextParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextParser.swift; path = "Text Classes/TextParser.swift"; sourceTree = "<group>"; };
+		4EA1606020A1491800A4E3F5 /* LayoutDemoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LayoutDemoView.swift; path = "Text Classes/LayoutDemoView.swift"; sourceTree = "<group>"; };
+		4EA1606620A1493500A4E3F5 /* CoreTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextView.swift; sourceTree = "<group>"; };
+		4EA1606720A1493500A4E3F5 /* PagerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagerView.swift; sourceTree = "<group>"; };
+		4EA1606820A1493500A4E3F5 /* SamplesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplesViewController.swift; sourceTree = "<group>"; };
+		4EA1606920A1493500A4E3F5 /* AttributedStringDoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributedStringDoc.swift; sourceTree = "<group>"; };
 		4EC1051620A1475F00AE51F1 /* VerticalTextPagerView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VerticalTextPagerView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EC1051920A1475F00AE51F1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EC1051B20A1475F00AE51F1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -35,6 +95,50 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E24B59120A14B67001273E2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4E24B5B120A14BFD001273E2 /* Images */,
+				4E24B5A820A14BD3001273E2 /* Fonts */,
+				4E24B59820A14BC3001273E2 /* Article.xml */,
+				4E24B59320A14BC2001273E2 /* Credits.xml */,
+				4E24B59A20A14BC3001273E2 /* demo.txt */,
+				4E24B59220A14BC2001273E2 /* demo1.txt */,
+				4E24B59620A14BC3001273E2 /* demo2.txt */,
+				4E24B59420A14BC3001273E2 /* Features.xml */,
+				4E24B59720A14BC3001273E2 /* FrameDrawing.xml */,
+				4E24B59920A14BC3001273E2 /* NSAttributedString Reference.xml */,
+				4E24B59C20A14BC3001273E2 /* Splash.png */,
+				4E24B59B20A14BC3001273E2 /* Splash.xml */,
+				4E24B59520A14BC3001273E2 /* US Founding Docs.xml */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		4E24B5A820A14BD3001273E2 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				4E24B5AB20A14BEF001273E2 /* VeraMoBd.ttf */,
+				4E24B5AC20A14BEF001273E2 /* VeraMoBI.ttf */,
+				4E24B5A920A14BEF001273E2 /* VeraMoIt.ttf */,
+				4E24B5AA20A14BEF001273E2 /* VeraMono.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		4E24B5B120A14BFD001273E2 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				4E24B5B620A14C26001273E2 /* 001.gif */,
+				4E24B5B720A14C26001273E2 /* 002.gif */,
+				4E24B5B320A14C26001273E2 /* 003.gif */,
+				4E24B5B520A14C26001273E2 /* 004.gif */,
+				4E24B5B420A14C26001273E2 /* 005.gif */,
+				4E24B5B220A14C26001273E2 /* 006.png */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 		4EC1050D20A1475F00AE51F1 = {
 			isa = PBXGroup;
 			children = (
@@ -54,14 +158,40 @@
 		4EC1051820A1475F00AE51F1 /* VerticalTextPagerView */ = {
 			isa = PBXGroup;
 			children = (
-				4EC1051920A1475F00AE51F1 /* AppDelegate.swift */,
 				4EC1051B20A1475F00AE51F1 /* ViewController.swift */,
+				4EA1606820A1493500A4E3F5 /* SamplesViewController.swift */,
+				4EA1606920A1493500A4E3F5 /* AttributedStringDoc.swift */,
+				4EA1606720A1493500A4E3F5 /* PagerView.swift */,
+				4EA1606620A1493500A4E3F5 /* CoreTextView.swift */,
 				4EC1051D20A1475F00AE51F1 /* Main.storyboard */,
+				4EC1052C20A1489500AE51F1 /* Text Classes */,
+				4EC1052B20A1477200AE51F1 /* Supporting Files */,
+				4E24B59120A14B67001273E2 /* Resources */,
+			);
+			path = VerticalTextPagerView;
+			sourceTree = "<group>";
+		};
+		4EC1052B20A1477200AE51F1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4EC1051920A1475F00AE51F1 /* AppDelegate.swift */,
 				4EC1052020A1476100AE51F1 /* Assets.xcassets */,
 				4EC1052220A1476100AE51F1 /* LaunchScreen.storyboard */,
 				4EC1052520A1476100AE51F1 /* Info.plist */,
 			);
-			path = VerticalTextPagerView;
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4EC1052C20A1489500AE51F1 /* Text Classes */ = {
+			isa = PBXGroup;
+			children = (
+				4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */,
+				4EA1605E20A1491800A4E3F5 /* CTView.swift */,
+				4EA1605D20A1491800A4E3F5 /* DemoData.swift */,
+				4EA1606020A1491800A4E3F5 /* LayoutDemoView.swift */,
+				4EA1605F20A1491800A4E3F5 /* TextParser.swift */,
+			);
+			name = "Text Classes";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -123,8 +253,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EC1052420A1476100AE51F1 /* LaunchScreen.storyboard in Resources */,
+				4E24B59D20A14BC3001273E2 /* demo1.txt in Resources */,
+				4E24B5AD20A14BEF001273E2 /* VeraMoIt.ttf in Resources */,
+				4E24B5BC20A14C26001273E2 /* 001.gif in Resources */,
+				4E24B5A320A14BC3001273E2 /* Article.xml in Resources */,
+				4E24B5A220A14BC3001273E2 /* FrameDrawing.xml in Resources */,
+				4E24B5BB20A14C26001273E2 /* 004.gif in Resources */,
 				4EC1052120A1476100AE51F1 /* Assets.xcassets in Resources */,
 				4EC1051F20A1475F00AE51F1 /* Main.storyboard in Resources */,
+				4E24B59F20A14BC3001273E2 /* Features.xml in Resources */,
+				4E24B5A520A14BC3001273E2 /* demo.txt in Resources */,
+				4E24B5BA20A14C26001273E2 /* 005.gif in Resources */,
+				4E24B5AF20A14BEF001273E2 /* VeraMoBd.ttf in Resources */,
+				4E24B5A020A14BC3001273E2 /* US Founding Docs.xml in Resources */,
+				4E24B5B020A14BEF001273E2 /* VeraMoBI.ttf in Resources */,
+				4E24B5A120A14BC3001273E2 /* demo2.txt in Resources */,
+				4E24B5A720A14BC3001273E2 /* Splash.png in Resources */,
+				4E24B5B920A14C26001273E2 /* 003.gif in Resources */,
+				4E24B5A620A14BC3001273E2 /* Splash.xml in Resources */,
+				4E24B59E20A14BC3001273E2 /* Credits.xml in Resources */,
+				4E24B5A420A14BC3001273E2 /* NSAttributedString Reference.xml in Resources */,
+				4E24B5BD20A14C26001273E2 /* 002.gif in Resources */,
+				4E24B5AE20A14BEF001273E2 /* VeraMono.ttf in Resources */,
+				4E24B5B820A14C26001273E2 /* 006.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,7 +286,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EA1606320A1491800A4E3F5 /* CTView.swift in Sources */,
+				4EA1606420A1491800A4E3F5 /* TextParser.swift in Sources */,
+				4EA1606C20A1493500A4E3F5 /* SamplesViewController.swift in Sources */,
+				4EA1606220A1491800A4E3F5 /* DemoData.swift in Sources */,
+				4EA1606520A1491800A4E3F5 /* LayoutDemoView.swift in Sources */,
+				4EA1606120A1491800A4E3F5 /* CTSelectionView.swift in Sources */,
 				4EC1051C20A1475F00AE51F1 /* ViewController.swift in Sources */,
+				4EA1606A20A1493500A4E3F5 /* CoreTextView.swift in Sources */,
+				4EA1606B20A1493500A4E3F5 /* PagerView.swift in Sources */,
+				4EA1606D20A1493500A4E3F5 /* AttributedStringDoc.swift in Sources */,
 				4EC1051A20A1475F00AE51F1 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
