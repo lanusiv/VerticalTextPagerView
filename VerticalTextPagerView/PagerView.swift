@@ -42,7 +42,7 @@ protocol DocumentPager {
     
     // Reset scroll view with new document and delegate
 //    - (void)reset:(AttributedStringDoc*)theDoc withDelegate:(id)scrollViewDelegate;
-    func reset(doc: AttributedStringDoc, withDelegate delegate: UIScrollViewDelegate?)
+    func reset(doc: AttributedStringDoc)
     
     // Selection handling (for user frame selections)
 //    - (void)addSelectionRange:(NSRange)range;
@@ -371,6 +371,8 @@ class PagerView: UIScrollView, DocumentPager {
     
     var operationQueue: OperationQueue!
     
+    var scrollFeedbackFromOtherControl: Bool!
+    
     // MARK: - initializers
     
     override init(frame: CGRect) {
@@ -421,12 +423,12 @@ class PagerView: UIScrollView, DocumentPager {
     
     // MARK: - Entry point for PagerView
     
-    func reset(doc: AttributedStringDoc, withDelegate delegate: UIScrollViewDelegate?) {
+    func reset(doc: AttributedStringDoc) {
         // Don't reset until any pending operations on previous doc are done
         //        [operationQueue waitUntilAllOperationsAreFinished];
         self.operationQueue.waitUntilAllOperationsAreFinished()
         
-        self.delegate = delegate
+        self.delegate = self
         
         self.pagesDict.removeAll()
         
@@ -438,6 +440,8 @@ class PagerView: UIScrollView, DocumentPager {
         } else {
             self.transform = .identity
         }
+        
+        self.scrollFeedbackFromOtherControl = true // ???
         
         self.pageDisplayed = 0
         self.pageCount = 0
@@ -971,4 +975,37 @@ class PagerView: UIScrollView, DocumentPager {
     }
     */
 
+}
+
+// MARK: - extended to confirm to UIScrollViewDelegate to implement page selection
+
+extension PagerView: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        //        print("scrollViewDidScroll ")
+        if scrollFeedbackFromOtherControl {
+            return
+        }
+        
+        let pageWidth = self.frame.size.width
+        let page = Int(floor((self.contentOffset.x - pageWidth / 2) / pageWidth)) + 1
+        self.setPage(page)
+    }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        //        print("scrollViewDidEndScrollingAnimation ")
+        let pageWidth = self.frame.size.width
+        let page = Int(floor((self.contentOffset.x - pageWidth / 2) / pageWidth)) + 1
+        self.setPage(page)
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        //        print("scrollViewWillBeginDragging")
+        self.scrollFeedbackFromOtherControl = false
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        //        print("scrollViewWillBeginDragging")
+        self.scrollFeedbackFromOtherControl = true
+    }
 }
