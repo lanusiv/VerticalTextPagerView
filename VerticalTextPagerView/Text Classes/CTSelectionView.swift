@@ -19,6 +19,9 @@ class CTSelectionView: UIView {
     var stringAttributes: [NSAttributedStringKey : Any] = [:]
     
     var selectionRange: NSRange?
+    var selectionRect: CGRect?
+    var selectionWord: String? // single word
+    
     
     var frames: [CTFrame]?
     
@@ -33,10 +36,35 @@ class CTSelectionView: UIView {
     
     let columnCount = 1
     
+    override var canBecomeFirstResponder: Bool {
+        get {
+            return true
+        }
+    }
+    
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let taps = touches.first?.tapCount
-        if let taps = taps, taps >= 1 {
-            let position = touches.first?.location(in: self)
+        if let touch = touches.first, touch.tapCount == 2 {
+            let position = touch.location(in: self)
+            // handle double touch event
+            // 1. hightlight selected line
+            // 2. show context menu
+            if let selectionRect = selectLine(at: position) {
+                self.selectionRect = selectionRect
+                
+                // show context menu
+                if self.becomeFirstResponder() {
+                    let menu = UIMenuController.shared
+                    var menuItems = [UIMenuItem]()
+//                    for i in 1 ... 3 {
+//                        menuItems.append(UIMenuItem(title: "Hello~~\(i)", action: #selector(sayHello)))
+//                    }
+//                    menu.menuItems = menuItems
+                    
+                    menu.setTargetRect(selectionRect, in: self)
+                    menu.setMenuVisible(true, animated: true)
+                }
+            }
 //            selectionLine(at: position!)
             self.tapPosition = position
 //            if self.touchPosition1 != nil && self.touchPosition2 != nil {
@@ -63,15 +91,19 @@ class CTSelectionView: UIView {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchesMoved(touches, with: event)
         super.touchesEnded(touches, with: event)
+        
+        // ..
+//        self.selectionRange = nil
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.touchesMoved(touches, with: event)
+//        self.touchesMoved(touches, with: event)
         super.touchesCancelled(touches, with: event)
     }
     
-    func selectionLine(at position: CGPoint?, in context: CGContext) {
-        guard let frames = self.frames, let position = position else { return }
+    func selectLine(at position: CGPoint?) -> CGRect? {
+        guard let frames = self.frames, let position = position else { return nil }
+        
         print("===position===", self.bounds)
         print("===position===", position)
         var rightPosition = position
@@ -94,7 +126,7 @@ class CTSelectionView: UIView {
                 
                 for lineIndex in 0 ..< lineCount {
                     let line = unsafeBitCast(CFArrayGetValueAtIndex(lines, lineIndex), to: CTLine.self)
-                    let lineBounds = getLineBounds(forLine: line, at: lineIndex, ofFrame: frame, inFrameRect: frameBounds, in: context)
+                    let lineBounds = getLineBounds(forLine: line, at: lineIndex, ofFrame: frame, inFrameRect: frameBounds)
                     
                     if lineBounds.contains(rightPosition) {
                         print("lineBounds", lineBounds)
@@ -109,19 +141,24 @@ class CTSelectionView: UIView {
                         // to be tuned...
                         let stringRange = CFRangeMake(hitStringIndex - 1, 1)
                         printRange(selectionRange: stringRange)
+                        
+                        let wordSelectionRange = NSRange(location: hitStringIndex - 1, length: 1)
+                        self.selectionWord = textStorge.attributedSubstring(from: wordSelectionRange).string
 
-                       
+                        let lineStringRange = CTLineGetStringRange(line)
+                        self.selectionRange = NSRange(location: lineStringRange.location, length: lineStringRange.length)
+                        
                         var selRect = CGRect(origin: lineBounds.origin, size: lineBounds.size)
 //                        selRect.origin.y = self.bounds.size.height - lineBounds.origin.y
 //                        selRect.origin.x = lineBounds.origin.x
 //                        print("selRect", selRect)
-                        context.setFillColor(UIColor.blue.withAlphaComponent(0.5).cgColor)
-                        context.fill(selRect)
-                        break
+                        
+                        return selRect
                     }
                 }
             }
         }
+        return nil
     }
     
     func printLine(line: CTLine) {
@@ -135,7 +172,7 @@ class CTSelectionView: UIView {
         print("printRange, selection string: ", selectionString.string)
     }
     
-    func getLineBounds(forLine line: CTLine, at lineIndex: CFIndex, ofFrame frame: CTFrame, inFrameRect frameBounds: CGRect, in context: CGContext) -> CGRect {
+    func getLineBounds(forLine line: CTLine, at lineIndex: CFIndex, ofFrame frame: CTFrame, inFrameRect frameBounds: CGRect) -> CGRect {
         var ascent: CGFloat = 0
         var descent: CGFloat = 0
         var leading: CGFloat = 0
@@ -150,6 +187,7 @@ class CTSelectionView: UIView {
         var lineOrigin: CGPoint = .zero
         CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
         let stringRange = CTLineGetStringRange(line)
+        
         let offsetInLine: CGFloat = CTLineGetOffsetForStringIndex(line, stringRange.location + stringRange.length, nil)
         print("offsetInLine", offsetInLine, "frameBounds.origin.x", frameBounds.origin.x, "frameBounds.origin.y", frameBounds.origin.y)
         
@@ -219,7 +257,7 @@ class CTSelectionView: UIView {
                 
                 for lineIndex in 0 ..< lineCount {
                     let line = unsafeBitCast(CFArrayGetValueAtIndex(lines, lineIndex), to: CTLine.self)
-                    let lineBounds = getLineBounds(forLine: line, at: lineIndex, ofFrame: frame, inFrameRect: frameBounds, in: context)
+                    let lineBounds = getLineBounds(forLine: line, at: lineIndex, ofFrame: frame, inFrameRect: frameBounds)
                     
                     if selectionEndPointInfo1 == nil {
                         selectionEndPointInfo1 = getSelectionPointInfo(for: point1, line: line, lineIndex: lineIndex, lineBounds: lineBounds)
@@ -292,11 +330,67 @@ class CTSelectionView: UIView {
         context.setStrokeColor(UIColor.red.cgColor)
         context.stroke(self.bounds)
         
-        selectionLine(at: self.tapPosition, in: context)
+        // highlight selection line if available
+        if let selectionRect = self.selectionRect {
+            context.setFillColor(UIColor.blue.withAlphaComponent(0.5).cgColor)
+            context.fill(selectionRect)
+        }
+        
         self.drawColumnFrames(context)
         
         
 //        self.drawImages(context)
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+//        super.canPerformAction(<#T##action: Selector##Selector#>, withSender: <#T##Any?#>)
+//        print("action", action, "sender", sender)
+        if action == #selector(copy(_:)) {
+            return true
+        } else if action == #selector(_lookup(_:)) {
+            if let _ = getRootViewController() {
+                return true
+            }
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
+    
+    override func copy(_ sender: Any?) {
+        print("copy")
+        if let selectionRange = self.selectionRange {
+            let selectionString = textStorge.attributedSubstring(from: selectionRange)
+            print("copy, string: ", selectionString.string)
+            let pBoard = UIPasteboard.general
+//            pBoard.addItems([["a" : "Hello~~~~"]])
+//            pBoard.setValue(selectionString.string, forPasteboardType: "string")
+            pBoard.string = selectionString.string
+        }
+        
+    }
+    
+
+    @objc func _lookup(_ sender: Any?) {
+        print("_lookup")
+        if let word = self.selectionWord, let rootViewController = getRootViewController() {
+            let refCtl = UIReferenceLibraryViewController(term: word)
+            rootViewController.present(refCtl, animated: true, completion: nil)
+        }
+    }
+    
+    func getRootViewController() -> UIViewController? {
+        let app = UIApplication.shared
+        var controller: UIViewController?
+        if let keyWindow = app.keyWindow, let ctrl = keyWindow.rootViewController {
+            controller = ctrl
+        } else if let window = app.windows.first, let ctrl = window.rootViewController {
+            controller = ctrl
+        }
+        if controller != nil {
+            while controller!.view.window == nil && controller!.presentedViewController != nil {
+                controller = controller!.presentedViewController
+            }
+        }
+        return controller
     }
     
     // MARK: - draw frames into columns
@@ -320,7 +414,7 @@ class CTSelectionView: UIView {
             var selectionAttributes = [NSAttributedStringKey.backgroundColor : UIColor.init(red: 0.0, green: 0.0, blue: 1.0, alpha: 0.9).cgColor]
             selectionAttributes[.foregroundColor] = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).cgColor
             self.textStorge.addAttributes(selectionAttributes, range: selectionRange)
-            self.selectionRange = nil
+//            self.selectionRange = nil
         }
         
         // Create the framesetter with the attributed string.
