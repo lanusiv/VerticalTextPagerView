@@ -501,6 +501,21 @@ class CTSelectionView: UIView {
                     path.addRect(startRect)
                     path.addRect(endRect)
                     path.addRects(rects)
+                    
+                    var startHandleRect = CGRect.zero
+                    startHandleRect.origin.x = startRect.maxX - 1
+                    startHandleRect.origin.y = startRect.maxY - 4.5
+                    startHandleRect.size.width = 9
+                    startHandleRect.size.height = 9
+                    path.addEllipse(in: startHandleRect)
+                    
+                    var endHandleRect = CGRect.zero
+                    endHandleRect.origin.x = endRect.minX - 4.5
+                    endHandleRect.origin.y = endRect.minY - 4.5
+                    endHandleRect.size.width = 9
+                    endHandleRect.size.height = 9
+                    path.addEllipse(in: endHandleRect)
+                    
                     self.selectionPath = path
                     
                     print("selection path", path)
