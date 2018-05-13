@@ -490,31 +490,53 @@ class CTSelectionView: UIView {
                             
                             print("end line rect: ", endRect)
                         }
+                        if rangeStart > lineStart, rangeEnd < lineEnd {
+                            
+                        }
                         lineIndex += 1
                     }
                     
-                    print("selection lines")
-                    for line in selectionLines {
-                        printLine(line: line)
-                    }
+//                    print("selection lines")
+//                    for line in selectionLines {
+//                        printLine(line: line)
+//                    }
                     
                     path.addRect(startRect)
                     path.addRect(endRect)
                     path.addRects(rects)
                     
-                    var startHandleRect = CGRect.zero
-                    startHandleRect.origin.x = startRect.maxX - 1
-                    startHandleRect.origin.y = startRect.maxY - 4.5
-                    startHandleRect.size.width = 9
-                    startHandleRect.size.height = 9
-                    path.addEllipse(in: startHandleRect)
+                    var bPath = UIBezierPath()
                     
+                    let handleRadius: CGFloat = 4
+                    var startHandleRect = CGRect.zero
+                    startHandleRect.origin.x = startRect.maxX
+                    startHandleRect.origin.y = startRect.maxY - handleRadius
+                    startHandleRect.size.width = handleRadius * 2.0
+                    startHandleRect.size.height = handleRadius * 2.0
+//                    bPath.addEllipse(in: startHandleRect)
+                    bPath.addArc(withCenter: CGPoint(x: startHandleRect.midX, y: startHandleRect.midY), radius: 4.5, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+                    
+                    bPath.move(to: CGPoint(x: startRect.minX, y: startRect.maxY))
+                    bPath.addLine(to: CGPoint(x: startRect.maxX, y: startRect.maxY))
+                    UIColor.blue.set()
+                    bPath.lineWidth = 2.0
+                    bPath.fill()
+                    bPath.stroke()
+                    
+                    
+                    bPath = UIBezierPath()
                     var endHandleRect = CGRect.zero
-                    endHandleRect.origin.x = endRect.minX - 4.5
-                    endHandleRect.origin.y = endRect.minY - 4.5
-                    endHandleRect.size.width = 9
-                    endHandleRect.size.height = 9
-                    path.addEllipse(in: endHandleRect)
+                    endHandleRect.origin.x = endRect.minX - handleRadius * 2
+                    endHandleRect.origin.y = endRect.minY - handleRadius
+                    endHandleRect.size.width = handleRadius * 2.0
+                    endHandleRect.size.height = handleRadius * 2.0
+                    bPath.addArc(withCenter: CGPoint(x: endHandleRect.midX, y: endHandleRect.midY), radius: 4.5, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+                    bPath.move(to: CGPoint(x: endRect.minX, y: endRect.minY))
+                    bPath.addLine(to: CGPoint(x: endRect.maxX, y: endRect.minY))
+                    UIColor.blue.set()
+                    bPath.lineWidth = 2.0
+                    bPath.fill()
+                    bPath.stroke()
                     
                     self.selectionPath = path
                     
@@ -571,7 +593,7 @@ class CTSelectionView: UIView {
         
         // highlight selection line if available
         if let selectionPath = self.selectionPath {
-            context.setFillColor(UIColor.blue.withAlphaComponent(0.5).cgColor)
+            context.setFillColor(UIColor.blue.withAlphaComponent(0.3).cgColor)
 //            context.fill(selectionPath)
             context.addPath(selectionPath)
             context.fillPath()
