@@ -55,6 +55,7 @@ class CTSelectionView: UIView {
         self.addGestureRecognizer(doubleTapRecognizer)
         
         let singleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(viewDidTap(_:)))
+        self.addGestureRecognizer(singleTapRecognizer)
     }
     
     @objc func viewDidDoubleTap(_ sender: UITapGestureRecognizer) {
@@ -384,6 +385,33 @@ class CTSelectionView: UIView {
         return selectionBounds
     }
     
+    
+    func getInLineSelectionRect(forLine line: CTLine, lineOrigin: CGPoint, stringStartIndex: Int, stringEndIndex: Int, inFrameRect frameBounds: CGRect) -> CGRect {
+        
+        let rect = CTLineGetBoundsWithOptions(line, CTLineBoundsOptions.useOpticalBounds)
+        
+        let stringRange = CTLineGetStringRange(line)
+        
+        let lineStartOffset = CTLineGetOffsetForStringIndex(line, stringStartIndex, nil)
+        
+        let lineEndOffset: CGFloat = CTLineGetOffsetForStringIndex(line, stringStartIndex + stringEndIndex, nil)
+        
+//        print("lineStartOffset", lineStartOffset, "lineEndOffset", lineEndOffset)
+        var selectionBounds: CGRect = .zero
+        
+        selectionBounds.origin.x = (frameBounds.origin.x + lineOrigin.x + rect.origin.x) - rect.height/2
+        selectionBounds.origin.y = /*frameBounds.size.height - lineEndOffset + */frameBounds.origin.y + frameBounds.size.height - lineStartOffset// ((lineOrigin.y + rect.origin.y)) // there must be a offset
+        print("lineOrigin.y", lineOrigin.y, "rect.origin.y", rect.origin.y)
+        
+        selectionBounds.size.width = rect.size.height
+        selectionBounds.size.height = lineEndOffset - lineStartOffset
+        
+        printLine(line: line)
+        //        print("lineOrigin", lineOrigin, "frameBounds.origin", frameBounds.origin, "ascent", ascent, "descent", descent, "leading", leading)
+        
+        return selectionBounds
+    }
+    
     struct SelectionInfo: Comparable {
         static func < (lhs: CTSelectionView.SelectionInfo, rhs: CTSelectionView.SelectionInfo) -> Bool {
             return lhs.stringIndex < rhs.stringIndex
@@ -463,7 +491,7 @@ class CTSelectionView: UIView {
                         let lineStart = range.location
                         let lineEnd = range.location + range.length
                         
-                        if lineStart >= rangeStart, lineEnd <= rangeEnd {
+                        if lineStart >= rangeStart && lineEnd <= rangeEnd {
                             selectionLines.append(line)
                             var lineOrigin: CGPoint = .zero
                             CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
@@ -471,8 +499,7 @@ class CTSelectionView: UIView {
                             print("rect", rect)
 //                            path.addRect(rect)
                             rects.append(rect)
-                        }
-                        if rangeStart > lineStart, rangeStart < lineEnd {
+                        } else if rangeStart > lineStart && rangeStart < lineEnd {
                             selectionLines.insert(line, at: 0)
                             var lineOrigin: CGPoint = .zero
                             CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
@@ -480,8 +507,7 @@ class CTSelectionView: UIView {
                             startRect = getStartSelectionRect(forLine: line, lineOrigin: lineOrigin, stringIndex: rangeStart, inFrameRect: frameBounds)
                             
                             print("start line rect: ", startRect)
-                        }
-                        if rangeEnd > lineStart, rangeEnd < lineEnd {
+                        } else if rangeEnd > lineStart && rangeEnd < lineEnd {
                             selectionLines.append(line)
                             var lineOrigin: CGPoint = .zero
                             CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
@@ -490,8 +516,13 @@ class CTSelectionView: UIView {
                             
                             print("end line rect: ", endRect)
                         }
-                        if rangeStart > lineStart, rangeEnd < lineEnd {
-                            
+                        
+                        if rangeStart > lineStart && rangeEnd < lineEnd {
+                            selectionLines.append(line)
+                            var lineOrigin: CGPoint = .zero
+                            CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
+                            let inLineRect = getInLineSelectionRect(forLine: line, lineOrigin: lineOrigin, stringStartIndex: rangeStart, stringEndIndex: rangeEnd, inFrameRect: frameBounds)
+                            print("inline bounds", inLineRect)
                         }
                         lineIndex += 1
                     }
