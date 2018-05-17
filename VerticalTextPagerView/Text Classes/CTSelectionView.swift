@@ -59,139 +59,132 @@ class CTSelectionView: UIView {
         
         let singleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(viewDidTap(_:)))
         self.addGestureRecognizer(singleTapRecognizer)
+        
+        let dragRecognizer = UIPanGestureRecognizer(target: self, action: #selector(viewDidDrag(_:)))
+        self.addGestureRecognizer(dragRecognizer)
+        
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(viewDidLongPress(_:)))
+//        longPressRecognizer.minimumPressDuration
+        self.addGestureRecognizer(longPressRecognizer)
+    }
+    
+    @objc func viewDidLongPress(_ sender: UILongPressGestureRecognizer) {
+        self.startSelection(sender)
     }
     
     @objc func viewDidDoubleTap(_ sender: UITapGestureRecognizer) {
-        if sender.state == .ended {
-            let position = sender.location(in: self)
-            print("viewDidDoubleTap point", position)
-            
-            // handle double touch event
-            // 1. hightlight selected line
-            // 2. show context menu
-            if let selectionRect = getHitPointRect(at: position) {
-                self.touchPosition1 = position
-                let path = CGMutablePath()
-                path.addRect(selectionRect)
-                self.selectionPath = path
-                // show context menu
-                self.showSelectionMenu(selectionRect)
-            }
-            self.tapPosition = position
-            
-            setNeedsDisplay()
-        }
+        self.startSelection(sender)
     }
     
     @objc func viewDidTap(_ sender: UITapGestureRecognizer) {
         if sender.state == .ended {
-            print("viewDidDoubleTap single tap")
-            if self.touchPosition1 != nil && self.touchPosition2 != nil {
-                self.touchPosition1 = nil
-                self.touchPosition2 = nil
-                self.selectionPath = nil
+            let position = sender.location(in: self)
+            
+            if let selectionPath = self.selectionPath {
+                let rightPos = CGPoint(x: position.x, y: self.bounds.height - position.y)
+                let inBounds = selectionPath.contains(rightPos)
+                if inBounds {
+                    showSelectionMenu(selectionPath.boundingBox)
+                } else {
+                    self.clearSelection()
+                }
+            }
+        }
+    }
+    
+    @objc func viewDidDrag(_ sender: UIPanGestureRecognizer) {
+        if sender.state == .ended {
+            if self.touchPosition2 != nil {
+                setNeedsDisplay()
+                if let selectionPath = self.selectionPath {
+                    showSelectionMenu(selectionPath.boundingBox)
+                }
+            }
+        } else if sender.state == .changed {
+            if self.touchPosition1 != nil {
+                let position = sender.location(in: self)
+                
+                // if selection exists, determine which is touchPosition1(start point) by comparing distance between current touch position and ouchPosition1, ouchPosition2
+                if let touchPosition1 = touchPosition1, let touchPosition2 = touchPosition2 {
+                    let d1 = abs(touchPosition1.x - position.x)
+                    let d2 = abs(touchPosition2.x - position.x)
+                    if d1 < d2 {
+                        self.touchPosition1 = self.touchPosition2
+                    }
+                }
+                self.touchPosition2 = position
+                if let touchPosition1 = touchPosition1, let touchPosition2 = touchPosition2 {
+                    //                print("touchPosition1", touchPosition1, "touchPosition2", touchPosition2)
+                    self.prepareSelection(between: touchPosition1, and: touchPosition2)
+                }
+                hideSelectionMenu()
                 setNeedsDisplay()
             }
         }
+        
+    }
+    
+    func startSelection(_ sender: UIGestureRecognizer) {
+        let position = sender.location(in: self)
+        
+        // handle double touch event
+        // 1. hightlight selected line
+        // 2. show context menu
+        if let selectionRect = getHitPointRect(at: position) {
+            self.touchPosition1 = position
+            let path = CGMutablePath()
+            path.addRect(selectionRect)
+            self.selectionPath = path
+            // show context menu
+            var rect = selectionRect
+            // convert rect to LLO coordinate, flip y
+            rect.origin.y = self.bounds.size.height - selectionRect.origin.y
+            // make the rect.y a height offset to adjust selection menu postion, in order to avoid the menu from obscuring selection text
+            rect.origin.y = rect.origin.y - selectionRect.size.height
+            if sender.state == .ended {
+                self.showSelectionMenu(rect)
+            }
+        }
+        self.tapPosition = position
+        
+        setNeedsDisplay()
     }
     
     func showSelectionMenu(_ rect: CGRect) {
         if self.becomeFirstResponder() {
             let menu = UIMenuController.shared
-//            var menuItems = [UIMenuItem]()
-//            for i in 1 ... 3 {
-//                menuItems.append(UIMenuItem(title: "Hello~~\(i)", action: #selector(sayHello)))
-//            }
-//            menu.menuItems = menuItems
+//            var rect = rect
+//            rect.origin.y = self.bounds.height - rect.origin.y
             
             menu.setTargetRect(rect, in: self)
             menu.setMenuVisible(true, animated: true)
         }
     }
     
-    
-    /*
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first, touch.tapCount == 2 {
-            let position = touch.location(in: self)
-            // handle double touch event
-            // 1. hightlight selected line
-            // 2. show context menu
-            if let selectionRect = selectLine(at: position) {
-                self.selectionRect = selectionRect
-                
-                // show context menu
-                if self.becomeFirstResponder() {
-                    let menu = UIMenuController.shared
-                    var menuItems = [UIMenuItem]()
-//                    for i in 1 ... 3 {
-//                        menuItems.append(UIMenuItem(title: "Hello~~\(i)", action: #selector(sayHello)))
-//                    }
-//                    menu.menuItems = menuItems
-                    
-                    menu.setTargetRect(selectionRect, in: self)
-                    menu.setMenuVisible(true, animated: true)
-                }
+    func hideSelectionMenu() {
+        if self.isFirstResponder {
+            let menu = UIMenuController.shared
+            if menu.isMenuVisible {
+                menu.setMenuVisible(false, animated: true)
             }
-//            selectionLine(at: position!)
-            self.tapPosition = position
-            if self.touchPosition1 != nil && self.touchPosition2 != nil {
-                touchPosition1 = nil
-                touchPosition2 = nil
-            } else if self.touchPosition1 == nil {
-                self.touchPosition1 = position
-            } else if self.touchPosition2 == nil {
-                self.touchPosition2 = position
-            }
-            setNeedsDisplay()
-            self.touchPosition1 = position
         }
-        super.touchesBegan(touches, with: event)
-    }
-    */
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if self.touchPosition1 != nil {
-            let position = touches.first?.location(in: self)
-            self.touchPosition2 = position
-            if let touchPosition1 = touchPosition1, let touchPosition2 = touchPosition2 {
-                print("touchPosition1", touchPosition1, "touchPosition2", touchPosition2)
-                self.prepareSelection(between: touchPosition1, and: touchPosition2)
-            }
-            setNeedsDisplay()
-        }
-        
-        super.touchesMoved(touches, with: event)
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        self.touchesMoved(touches, with: event)
-        if self.touchPosition2 != nil {
-            self.touchPosition1 = touches.first?.location(in: self)
-            setNeedsDisplay()
-        }
-        
-        super.touchesEnded(touches, with: event)
-        
-        // ..
-//        self.selectionRange = nil
+    func clearSelection() {
+        self.touchPosition1 = nil
+        self.touchPosition2 = nil
+        self.selectionPath = nil
+        hideSelectionMenu()
+        setNeedsDisplay()
     }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        self.touchesMoved(touches, with: event)
-        super.touchesCancelled(touches, with: event)
-    }
-    
-    
     
     func getHitPointRect(at position: CGPoint?) -> CGRect? {
         guard let frames = self.frames, let position = position else { return nil }
         
-        print("getHitPointRect  bounds", self.bounds)
-        print("getHitPointRect  position", position)
         var rightPosition = position
         if verticalLayout {
             rightPosition = CGPoint(x: position.x, y: self.bounds.size.height - position.y)
-            print("getHitPointRect flippedPosition", rightPosition)
+//            print("getHitPointRect flippedPosition", rightPosition)
         }
         
         for frame in frames {
@@ -211,17 +204,13 @@ class CTSelectionView: UIView {
                     let lineBounds = getLineBounds(forLine: line, at: lineIndex, ofFrame: frame, inFrameRect: frameBounds)
                     
                     if lineBounds.contains(rightPosition) {
-                        print("lineBounds", lineBounds)
-                        printLine(line: line)
+                        
                         var apos = position
                         if verticalLayout {
                             apos = CGPoint(x: position.y, y: position.x)
                         }
                         // CTLineGetStringIndexForPosition only cares point.x, so it is not very reliable
                         let hitStringIndex = CTLineGetStringIndexForPosition(line, apos)
-                        print("string index for position: ", hitStringIndex)
-                        
-//                        CTGetPath
                         
                         // to be tuned...
                         let stringRange = CFRangeMake(hitStringIndex - 1, 1)
@@ -232,25 +221,16 @@ class CTSelectionView: UIView {
                         
                         let offset = CTLineGetOffsetForStringIndex(line, hitStringIndex, nil)
                         
-                        print("CTLineGetOffsetForStringIndex", offset)
-                        
                         let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: 20.0)
                         let font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
                         let rect = CTFontGetBoundingBox(font)
-                        print("CTFontGetBoundingBox", rect)
                         
                         var wordRect = CGRect(origin: .zero, size: rect.size)
                         wordRect.origin.x = lineBounds.origin.x + (lineBounds.size.width - rect.size.width) / 2
                         wordRect.origin.y = frameBounds.size.height - offset + frameBounds.origin.y
                         
-                        print("wordRect", wordRect)
-                        
                         self.selectionWordRect = wordRect
                         
-                        print("wordRect.maxY, wordRect.minY, wordRect.midY, wordRect.maxX, wordRect.minX, wordRect.midX")
-                        print(wordRect.maxY, wordRect.minY, wordRect.midY, wordRect.maxX, wordRect.minX, wordRect.midX)
-                        print()
-//                        self.touchPosition1 = CGPoint(x: wordRect.midX, y: frameBounds.size.height - wordRect.minY)
                         let handles = getSelectionHandles(startRect: wordRect, endRect: wordRect)
                         self.startSelectionHandlePath = handles.startHandle
                         self.endSelectionHandlePath = handles.endHandle
@@ -258,12 +238,7 @@ class CTSelectionView: UIView {
                         
                         self.selectionRange = wordSelectionRange
                         
-                        var selRect = CGRect(origin: lineBounds.origin, size: lineBounds.size)
-//                        selRect.origin.y = self.bounds.size.height - lineBounds.origin.y
-//                        selRect.origin.x = lineBounds.origin.x
-//                        print("selRect", selRect)
-                        
-                        return wordRect//selRect
+                        return wordRect
                     }
                 }
             }
@@ -283,14 +258,8 @@ class CTSelectionView: UIView {
     }
     
     func getLineBounds(forLine line: CTLine, at lineIndex: CFIndex, ofFrame frame: CTFrame, inFrameRect frameBounds: CGRect) -> CGRect {
-        var ascent: CGFloat = 0
-        var descent: CGFloat = 0
-        var leading: CGFloat = 0
-        
-        let lineWidth = CTLineGetTypographicBounds(line, &ascent, &descent, &leading)
-//        print("line width: ", lineWidth)
         let rect = CTLineGetBoundsWithOptions(line, CTLineBoundsOptions.useOpticalBounds)
-        print("CTLineGetBoundsWithOptions", rect)
+//        print("CTLineGetBoundsWithOptions", rect)
 //        let rect2 = CTLineGetImageBounds(line, context)
 //        print("CTLineGetImageBounds", rect2)
         
@@ -299,35 +268,22 @@ class CTSelectionView: UIView {
         let stringRange = CTLineGetStringRange(line)
         
         let offsetInLine: CGFloat = CTLineGetOffsetForStringIndex(line, stringRange.location + stringRange.length, nil)
-        print("offsetInLine", offsetInLine, "frameBounds.origin.x", frameBounds.origin.x, "frameBounds.origin.y", frameBounds.origin.y)
-        
-//        print("lineOrigin", lineOrigin)
         var selectionBounds: CGRect = .zero
         if verticalLayout {
             selectionBounds.origin.x = (frameBounds.origin.x + lineOrigin.x + rect.origin.x) - rect.height/2
             selectionBounds.origin.y = frameBounds.size.height - offsetInLine + frameBounds.origin.y// ((lineOrigin.y + rect.origin.y)) // there must be a offset
-            print("lineOrigin.y", lineOrigin.y, "rect.origin.y", rect.origin.y)
-            let y = (lineOrigin.y + frameBounds.origin.y) - (descent + leading)
-//            print("(lineOrigin.y + frameBounds.origin.y) - (descent + leading)", y, "selectionBounds.origin.y", selectionBounds.origin.y)
             
             selectionBounds.size.width = rect.size.height
             selectionBounds.size.height = rect.size.width
         } else {
             selectionBounds.origin.x = (frameBounds.origin.x + lineOrigin.x + rect.origin.x)
-            var y = frameBounds.size.height - lineOrigin.y + frameBounds.origin.y - (rect.height)
-            print("ascent", ascent, "descent", descent, "leading", leading)
-//            if y < 0 {
-//                y = 0
-//            }
-//            y = self.bounds.size.height - y
+            let y = frameBounds.size.height - lineOrigin.y + frameBounds.origin.y - (rect.height)
             selectionBounds.origin.y = y
-            print("lineOrigin.y", lineOrigin.y, "rect.origin.y", rect.origin.y)
             selectionBounds.size = rect.size
         }
         
-        print("selectionBounds", selectionBounds)
-        printLine(line: line)
-//        print("lineOrigin", lineOrigin, "frameBounds.origin", frameBounds.origin, "ascent", ascent, "descent", descent, "leading", leading)
+//        print("selectionBounds", selectionBounds)
+//        printLine(line: line)
         
         return selectionBounds
     }
@@ -341,18 +297,13 @@ class CTSelectionView: UIView {
         
         let lineEndOffset: CGFloat = CTLineGetOffsetForStringIndex(line, stringEndIndex, nil)
         
-        print("getSelectionRect", "lineStartOffset", lineStartOffset, "lineEndOffset", lineEndOffset)
         var selectionBounds: CGRect = .zero
         
         selectionBounds.origin.x = (frameBounds.origin.x + lineOrigin.x + rect.origin.x) - rect.height/2
-        selectionBounds.origin.y = /*frameBounds.size.height - lineEndOffset + */frameBounds.origin.y + frameBounds.size.height - lineEndOffset// ((lineOrigin.y + rect.origin.y)) // there must be a offset
-        print("lineOrigin.y", lineOrigin.y, "rect.origin.y", rect.origin.y)
+        selectionBounds.origin.y = frameBounds.origin.y + frameBounds.size.height - lineEndOffset
         
         selectionBounds.size.width = rect.size.height
         selectionBounds.size.height = lineEndOffset - lineStartOffset
-        
-        printLine(line: line)
-        //        print("lineOrigin", lineOrigin, "frameBounds.origin", frameBounds.origin, "ascent", ascent, "descent", descent, "leading", leading)
         
         return selectionBounds
     }
@@ -372,7 +323,7 @@ class CTSelectionView: UIView {
         
         startHandlePath.move(to: CGPoint(x: startRect.minX, y: startRect.maxY))
         startHandlePath.addLine(to: CGPoint(x: startRect.maxX, y: startRect.maxY))
-//        UIColor.blue.set()
+
         startHandlePath.lineWidth = 2.0
         
         let endHandlePath = UIBezierPath()
@@ -384,7 +335,7 @@ class CTSelectionView: UIView {
         endHandlePath.addArc(withCenter: CGPoint(x: endHandleRect.midX, y: endHandleRect.midY), radius: 4.5, startAngle: 0, endAngle: .pi * 2, clockwise: true)
         endHandlePath.move(to: CGPoint(x: endRect.minX, y: endRect.minY))
         endHandlePath.addLine(to: CGPoint(x: endRect.maxX, y: endRect.minY))
-//        UIColor.blue.set()
+
         endHandlePath.lineWidth = 2.0
         
         return (startHandlePath, endHandlePath)
@@ -416,7 +367,6 @@ class CTSelectionView: UIView {
             
             // assume all points are in the same frame
             if frameBounds.contains(point1) && frameBounds.contains(point2) {
-                print("frameBounds", frameBounds)
                 // if position locates in this frame path, iterates lines of this frame
                 let lines = CTFrameGetLines(frame) as! [CTLine]
                 let lineCount = lines.count
@@ -444,10 +394,10 @@ class CTSelectionView: UIView {
                     if startStringIndex * endStringIndex <= 0 {
                         return
                     }
-                    print("startLineIndex", startStringIndex, "endLineIndex", endStringIndex)
+//                    print("startLineIndex", startStringIndex, "endLineIndex", endStringIndex)
                     
                     let selectionRange = NSRange(location: startStringIndex - 1, length: endStringIndex - startStringIndex)
-                    printRange(selectionRange: CFRangeMake(startStringIndex - 1, endStringIndex - startStringIndex))
+//                    printRange(selectionRange: CFRangeMake(startStringIndex - 1, endStringIndex - startStringIndex))
                     
                     self.selectionRange = selectionRange
                     
@@ -462,8 +412,8 @@ class CTSelectionView: UIView {
                     
                     let path = CGMutablePath()
                     
-                    print("range start", rangeStart)
-                    print("range end", rangeEnd)
+//                    print("range start", rangeStart)
+//                    print("range end", rangeEnd)
                     var lineIndex = 0
                     for line in lines {
                         let range = CTLineGetStringRange(line)
@@ -474,8 +424,10 @@ class CTSelectionView: UIView {
                             var lineOrigin: CGPoint = .zero
                             CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
                             let rect = getSelectionRect(forLine: line, lineOrigin: lineOrigin, stringStartIndex: lineStart, stringEndIndex: lineEnd, inFrameRect: frameBounds)
-                            print("rect", rect)
-                            midLineRects.append(rect)
+//                            print("rect", rect)
+                            if rect != .zero {
+                                midLineRects.append(rect)
+                            }
                         }
                         // first line
                         else if lineStart < rangeStart && lineEnd > rangeStart, lineEnd < rangeEnd {
@@ -484,7 +436,7 @@ class CTSelectionView: UIView {
                             CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
                             
                             startLineRect = getSelectionRect(forLine: line, lineOrigin: lineOrigin, stringStartIndex: rangeStart, stringEndIndex: lineEnd, inFrameRect: frameBounds)
-                            print("start line rect: ", startLineRect)
+//                            print("start line rect: ", startLineRect)
                         }
                         // last line
                         else if lineStart > rangeStart, lineStart < rangeEnd && lineEnd > rangeEnd {
@@ -494,7 +446,7 @@ class CTSelectionView: UIView {
                             
                             endLineRect = getSelectionRect(forLine: line, lineOrigin: lineOrigin, stringStartIndex: lineStart, stringEndIndex: rangeEnd, inFrameRect: frameBounds)
                             
-                            print("end line rect: ", endLineRect)
+//                            print("end line rect: ", endLineRect)
                         }
                         // slection within one line
                         else if lineStart <= rangeStart && lineEnd >= rangeEnd {
@@ -502,15 +454,23 @@ class CTSelectionView: UIView {
                             var lineOrigin: CGPoint = .zero
                             CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
                             inlineRect = getSelectionRect(forLine: line, lineOrigin: lineOrigin, stringStartIndex: rangeStart, stringEndIndex: rangeEnd, inFrameRect: frameBounds)
-                            print("inline bounds", inlineRect)
+//                            print("inline bounds", inlineRect)
                         }
                         lineIndex += 1
                     }
                     
-                    path.addRect(inlineRect)
-                    path.addRect(startLineRect)
-                    path.addRect(endLineRect)
-                    path.addRects(midLineRects)
+                    if inlineRect != .zero {
+                        path.addRect(inlineRect)
+                    }
+                    if startLineRect != .zero {
+                        path.addRect(startLineRect)
+                    }
+                    if endLineRect != .zero {
+                        path.addRect(endLineRect)
+                    }
+                    if midLineRects.count > 0 {
+                        path.addRects(midLineRects)
+                    }
                     
                     if inlineRect != .zero {
                         let handles = getSelectionHandles(startRect: inlineRect, endRect: inlineRect)
@@ -537,15 +497,12 @@ class CTSelectionView: UIView {
         
         // find the line that contains point2
         if lineBounds.contains(point) {
-            print("lineBounds", lineBounds)
-            //            printLine(line: line)
             var rightPosition: CGPoint = point
             // if vertical layout, should transpose point in order to get the right hit string index
             if verticalLayout {
                 rightPosition = CGPoint(x: point.y, y: point.x)
             }
             stringIndex = CTLineGetStringIndexForPosition(line, rightPosition)
-            print("stringIndex", stringIndex)
             //            let stringRange = CTLineGetStringRange(line)
             //            print("stringRange", stringRange)
             
@@ -579,6 +536,11 @@ class CTSelectionView: UIView {
             startSelectionHandlePath.fill()
             endSelectionHandlePath.stroke()
             endSelectionHandlePath.fill()
+            
+            // debug
+//            context.setStrokeColor(UIColor.red.cgColor)
+//            context.setLineWidth(3.0)
+//            context.stroke(selectionPath.boundingBox)
         }
         
         self.drawColumnFrames(context)
@@ -587,8 +549,6 @@ class CTSelectionView: UIView {
     }
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-//        super.canPerformAction(<#T##action: Selector##Selector#>, withSender: <#T##Any?#>)
-//        print("action", action, "sender", sender)
         if action == #selector(copy(_:)) {
             return true
         } else if action == #selector(_lookup(_:)) {
@@ -605,11 +565,9 @@ class CTSelectionView: UIView {
             let selectionString = textStorge.attributedSubstring(from: selectionRange)
             print("copy, string: ", selectionString.string)
             let pBoard = UIPasteboard.general
-//            pBoard.addItems([["a" : "Hello~~~~"]])
-//            pBoard.setValue(selectionString.string, forPasteboardType: "string")
             pBoard.string = selectionString.string
         }
-        
+        self.clearSelection()
     }
     
 
@@ -619,6 +577,7 @@ class CTSelectionView: UIView {
             let refCtl = UIReferenceLibraryViewController(term: word)
             rootViewController.present(refCtl, animated: true, completion: nil)
         }
+        self.clearSelection()
     }
     
     func getRootViewController() -> UIViewController? {
