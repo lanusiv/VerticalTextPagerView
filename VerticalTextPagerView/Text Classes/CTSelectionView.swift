@@ -24,7 +24,7 @@ class CTSelectionView: UIView, TextViewSelection {
     
     var images: [(image: UIImage, frame: CGRect)] = []
     
-    let verticalLayout = true
+    let isVerticalLayout = true
     
     let columnCount = 1
     
@@ -61,7 +61,7 @@ class CTSelectionView: UIView, TextViewSelection {
         let string = chineseString
         let font = CTFontCreateUIFontForLanguage(.system, 20.0, nil)
         self.stringAttributes[.font] = font
-        if verticalLayout {
+        if isVerticalLayout {
             self.stringAttributes[.verticalGlyphForm] = NSNumber(value: true)
             let attributedString = NSMutableAttributedString(string: string, attributes: stringAttributes)
             self.textStorge.setAttributedString(attributedString)
@@ -84,7 +84,7 @@ class CTSelectionView: UIView, TextViewSelection {
         // Create the framesetter with the attributed string.
         let framesetter = CTFramesetterCreateWithAttributedString(self.textStorge)
         var frameAttributes: CFDictionary?
-        if verticalLayout {
+        if isVerticalLayout {
             frameAttributes = [kCTFrameProgressionAttributeName as NSAttributedStringKey: NSNumber(value: CTFrameProgression.rightToLeft.rawValue)] as CFDictionary
         } else {
             frameAttributes = nil

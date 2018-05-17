@@ -11,7 +11,7 @@ import UIKit
 @objc protocol TextViewSelection {
     var frames: [CTFrame]? { get }
     var textStorge: NSMutableAttributedString { get }
-    var verticalLayout:Bool { get }
+    var isVerticalLayout: Bool { get }
     var bounds: CGRect { get }
     
     // refresh view's text
@@ -39,13 +39,25 @@ class SelectionView: UIView {
     
     var selectionWordRect: CGRect?
 
+    // MARK: - static method
+    
+    static func initSelectionView<T : UIView & TextViewSelection>(_ view: T) {
+        // add selection view, to handle selction logic
+        let selectionView = SelectionView(view: view)
+        print("selectionView.frame", selectionView.frame)
+//        selectionView.backgroundColor = .clear
+        selectionView.backgroundColor = UIColor.red.withAlphaComponent(0.1)
+        view
+        .addSubview(selectionView)
+    }
+    
     // MARK: - Initializers
     
-    override init(frame: CGRect) {
+    private override init(frame: CGRect) {
         super.init(frame: frame)
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    internal required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
@@ -293,7 +305,7 @@ extension SelectionView {
                     
                     if lineBounds.contains(rightPosition) {
                         var apos = position
-                        if self.textView.verticalLayout {
+                        if self.textView.isVerticalLayout {
                             apos = CGPoint(x: position.y, y: position.x)
                         }
                         // CTLineGetStringIndexForPosition only cares point.x, so it is not very reliable
@@ -356,7 +368,7 @@ extension SelectionView {
         
         let offsetInLine: CGFloat = CTLineGetOffsetForStringIndex(line, stringRange.location + stringRange.length, nil)
         var selectionBounds: CGRect = .zero
-        if self.textView.verticalLayout {
+        if self.textView.isVerticalLayout {
             selectionBounds.origin.x = (frameBounds.origin.x + lineOrigin.x + rect.origin.x) - rect.height/2
             selectionBounds.origin.y = frameBounds.size.height - offsetInLine + frameBounds.origin.y// ((lineOrigin.y + rect.origin.y)) // there must be a offset
             
@@ -585,7 +597,7 @@ extension SelectionView {
         if lineBounds.contains(point) {
             var rightPosition: CGPoint = point
             // if vertical layout, should transpose point in order to get the right hit string index
-            if self.textView.verticalLayout {
+            if self.textView.isVerticalLayout {
                 rightPosition = CGPoint(x: point.y, y: point.x)
             }
             stringIndex = CTLineGetStringIndexForPosition(line, rightPosition)
