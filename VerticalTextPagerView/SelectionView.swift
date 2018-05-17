@@ -10,9 +10,10 @@ import UIKit
 
 @objc protocol TextViewSelection {
     var frames: [CTFrame]? { get }
-    var textStorge: NSMutableAttributedString { get }
+    var textStorage: NSMutableAttributedString { get }
     var isVerticalLayout: Bool { get }
     var bounds: CGRect { get }
+    var frame: CGRect { get }
     
     // refresh view's text
     @objc optional func refreshText()
@@ -38,17 +39,20 @@ class SelectionView: UIView {
     var endSelectionHandlePath: UIBezierPath?
     
     var selectionWordRect: CGRect?
+    
+    var dragGestureRecognizer: UIPanGestureRecognizer!
 
     // MARK: - static method
     
-    static func initSelectionView<T : UIView & TextViewSelection>(_ view: T) {
+    static func initSelectionView<T : UIView & TextViewSelection>(_ view: T) -> SelectionView {
         // add selection view, to handle selction logic
         let selectionView = SelectionView(view: view)
         print("selectionView.frame", selectionView.frame)
-//        selectionView.backgroundColor = .clear
-        selectionView.backgroundColor = UIColor.red.withAlphaComponent(0.1)
-        view
-        .addSubview(selectionView)
+        selectionView.backgroundColor = .clear
+//        selectionView.backgroundColor = UIColor.red.withAlphaComponent(0.1)
+        view.addSubview(selectionView)
+        
+        return selectionView
     }
     
     // MARK: - Initializers
@@ -67,16 +71,20 @@ class SelectionView: UIView {
         
         let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(viewDidDoubleTap(_:)))
         doubleTapRecognizer.numberOfTapsRequired = 2
+        doubleTapRecognizer.cancelsTouchesInView = false
         self.addGestureRecognizer(doubleTapRecognizer)
         
         let singleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(viewDidTap(_:)))
+        singleTapRecognizer.cancelsTouchesInView = false
         self.addGestureRecognizer(singleTapRecognizer)
         
-        let dragRecognizer = UIPanGestureRecognizer(target: self, action: #selector(viewDidDrag(_:)))
-        self.addGestureRecognizer(dragRecognizer)
+        self.dragGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(viewDidDrag(_:)))
+        dragGestureRecognizer.cancelsTouchesInView = false
+//        self.addGestureRecognizer(self.dragGestureRecognizer)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(viewDidLongPress(_:)))
         //        longPressRecognizer.minimumPressDuration
+        longPressRecognizer.cancelsTouchesInView = false
         self.addGestureRecognizer(longPressRecognizer)
         
     }
@@ -138,7 +146,7 @@ extension SelectionView {
     override func copy(_ sender: Any?) {
         print("copy")
         if let selectionRange = self.selectionRange {
-            let selectionString = textView.textStorge.attributedSubstring(from: selectionRange)
+            let selectionString = textView.textStorage.attributedSubstring(from: selectionRange)
             print("copy, string: ", selectionString.string)
             let pBoard = UIPasteboard.general
             pBoard.string = selectionString.string
@@ -233,6 +241,9 @@ extension SelectionView {
     // MARK: handle selection
     
     func startSelection(_ sender: UIGestureRecognizer) {
+        
+        self.addGestureRecognizer(self.dragGestureRecognizer)
+        
         let position = sender.location(in: self)
         
         // handle double touch event
@@ -283,6 +294,7 @@ extension SelectionView {
         self.selectionPath = nil
         hideSelectionMenu()
         setNeedsDisplay()
+        self.removeGestureRecognizer(self.dragGestureRecognizer)
     }
     
     // MARK: query selection rect info
@@ -316,7 +328,7 @@ extension SelectionView {
                         printRange(selectionRange: stringRange)
                         
                         let wordSelectionRange = NSRange(location: hitStringIndex - 1, length: 1)
-                        self.selectionWord = self.textView.textStorge.attributedSubstring(from: wordSelectionRange).string
+                        self.selectionWord = self.textView.textStorage.attributedSubstring(from: wordSelectionRange).string
                         
                         let offset = CTLineGetOffsetForStringIndex(line, hitStringIndex, nil)
                         
@@ -347,12 +359,12 @@ extension SelectionView {
     
     func printLine(line: CTLine) {
         let selectionRange = CTLineGetStringRange(line)
-        let selectionString = self.textView.textStorge.attributedSubstring(from: NSRange(location: selectionRange.location, length: selectionRange.length))
+        let selectionString = self.textView.textStorage.attributedSubstring(from: NSRange(location: selectionRange.location, length: selectionRange.length))
         print("printLine, selection string: ", selectionString.string)
     }
     
     func printRange(selectionRange: CFRange) {
-        let selectionString = self.textView.textStorge.attributedSubstring(from: NSRange(location: selectionRange.location, length: selectionRange.length))
+        let selectionString = self.textView.textStorage.attributedSubstring(from: NSRange(location: selectionRange.location, length: selectionRange.length))
         print("printRange, selection string: ", selectionString.string)
     }
     

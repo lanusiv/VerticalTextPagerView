@@ -12,7 +12,7 @@ class CTSelectionView: UIView, TextViewSelection {
 
     // MARK: - Properties
     
-    let textStorge = NSMutableAttributedString(string: "")
+    let textStorage = NSMutableAttributedString(string: "")
     
     var attrString: NSAttributedString?
     
@@ -64,14 +64,14 @@ class CTSelectionView: UIView, TextViewSelection {
         if isVerticalLayout {
             self.stringAttributes[.verticalGlyphForm] = NSNumber(value: true)
             let attributedString = NSMutableAttributedString(string: string, attributes: stringAttributes)
-            self.textStorge.setAttributedString(attributedString)
+            self.textStorage.setAttributedString(attributedString)
         } else {
             let attributedString = NSMutableAttributedString(string: string)
-            self.textStorge.setAttributedString(attributedString)
+            self.textStorage.setAttributedString(attributedString)
         }
         if let attrString = self.attrString {
             
-            self.textStorge.setAttributedString(attrString)
+            self.textStorage.setAttributedString(attrString)
         }
         /*
         if let selectionRange = self.selectionRange {
@@ -82,7 +82,7 @@ class CTSelectionView: UIView, TextViewSelection {
         }
         */
         // Create the framesetter with the attributed string.
-        let framesetter = CTFramesetterCreateWithAttributedString(self.textStorge)
+        let framesetter = CTFramesetterCreateWithAttributedString(self.textStorage)
         var frameAttributes: CFDictionary?
         if isVerticalLayout {
             frameAttributes = [kCTFrameProgressionAttributeName as NSAttributedStringKey: NSNumber(value: CTFrameProgression.rightToLeft.rawValue)] as CFDictionary

@@ -15,8 +15,8 @@ let IPAD_VERTICAL_MARGIN: CGFloat = 30
 let IPHONE_HORIZONTAL_MARGIN: CGFloat = 10
 let IPHONE_VERTICAL_MARGIN: CGFloat = 10
 
-class CoreTextView: UIView {
-
+class CoreTextView: UIView, TextViewSelection {
+    
     // MARK: - Properties
     
     var scrollView: PagerView!
@@ -24,9 +24,17 @@ class CoreTextView: UIView {
     var selectedFrame: Int = .max
     var layoutOnlyOnDraw: Bool = false
     
-    var isVerticalLayout = false
-    
     var caLayerDrawDelegate: CoreTextViewDraw?
+    
+    // MARK: Properties confirm to TextViewSelection
+    
+    var isVerticalLayout = true
+    
+    var frames: [CTFrame]?
+    
+    var textStorage = NSMutableAttributedString(string: "")
+    
+    var selectionView: SelectionView?
     
     // MARK: - Initializers
     
@@ -44,6 +52,19 @@ class CoreTextView: UIView {
         self.scrollView = scrollView
         
         self.caLayerDrawDelegate = CoreTextViewDraw(initWithView: self)
+        
+        self.frames = []
+    }
+    
+    func addSelectionView() {
+        if self.selectionView == nil {
+            self.selectionView = SelectionView.initSelectionView(self)
+            if isVerticalLayout {
+                selectionView!.transform = CGAffineTransform(rotationAngle: .pi)
+            }
+        }
+        
+        //        selectionView.frame = self.bounds
     }
     
     // MARK: - override methods
@@ -76,14 +97,14 @@ class CoreTextView: UIView {
     
     // MARK: - Touch Handling
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    /*override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let numTap = touch.tapCount
 //            print("touchesBegan tapCount: ", numTap)
             self.selectFrame(at: touch.location(in: self))
         }
         super.touchesBegan(touches, with: event)
-    }
+    }*/
     
     func selectFrame(at position: CGPoint) {
         let layoutBounds = self.bounds
@@ -294,6 +315,9 @@ class CoreTextView: UIView {
                 }
                 if !self.layoutOnlyOnDraw {
                     CTFrameDraw(frame!, context)
+                    
+                    // collect frames
+                    self.frames!.append(frame!)
                     // After drawing frame, draw selected frame highlight rects
                     //                    [self hilightSelectedRangesForFrame:frameInfo inContext:context];
                 }
@@ -352,5 +376,9 @@ class CoreTextView: UIView {
         pageInfo.needsReLayout = false
     }
     
+}
 
+
+extension CoreTextView {
+    
 }

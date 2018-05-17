@@ -14,6 +14,9 @@ protocol DocumentPager {
     // Reset scroll view with new document and delegate
     func reset(doc: AttributedStringDoc)
     
+    // current displayed page
+    func pageSelected(page: CoreTextView)
+    
     // Change to next/previous page
     func pageUp()
     func pageDown()
@@ -338,6 +341,13 @@ let coreTextViewCount = 3
 
 class PagerView: UIScrollView, DocumentPager {
     
+    var frames: [CTFrame]?
+    
+    var textStorge = NSMutableAttributedString(string: "")
+    
+    var isVerticalLayout: Bool = true
+    
+    
     // MARK: - Properities
     
     var document: AttributedStringDoc!
@@ -437,6 +447,11 @@ class PagerView: UIScrollView, DocumentPager {
         self.loadAsyncPageAfter(currentPage: 1)
         
         self.setNeedsDisplay()
+        
+        // collect selection info
+        let ctView = pageViews[currCoreTextView]
+        self.pageSelected(page: ctView)
+        
     }
     
     // MARK: - pager view methods
@@ -708,6 +723,18 @@ class PagerView: UIScrollView, DocumentPager {
     
     // MARK: - DocumentPager implementation
     
+    func pageSelected(page: CoreTextView) {
+        print("pageSelected, page number", self.pageDisplayed)
+//        SelectionView.initSelectionView(self, bounds: page.frame)
+//
+        if let attributedString = self.document.attributedString {
+            //            print("PageViewer, attributedString", attributedString.string)
+            page.textStorage.setAttributedString(attributedString)
+            page.addSelectionView()
+        }
+//        self.frames = page.frames
+    }
+    
     func pageUp() {
         switchPageMovingUp(up: true)
     }
@@ -854,6 +881,7 @@ class PagerView: UIScrollView, DocumentPager {
                 
                 layer.bounds = bounds
                 layer.backgroundColor = UIColor.clear.cgColor
+                layer.contentsScale = UIScreen.main.scale
                 
                 //                [theLayer setDelegate: ctView.caLayerDrawDelegate];
                 layer.delegate = ctView.caLayerDrawDelegate
@@ -893,6 +921,8 @@ class PagerView: UIScrollView, DocumentPager {
             }
         }
         
+        let ctView = pageViews[currCoreTextView]
+        self.pageSelected(page: ctView)
         // Post accessibility notification letting accessibility know that major screen change has occured
         //        UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, NULL);
     }
