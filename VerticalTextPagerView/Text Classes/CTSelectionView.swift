@@ -165,15 +165,18 @@ class CTSelectionView: UIView, TextViewSelection {
 //                    context.setStrokeColor(UIColor.red.cgColor)
 //                    context.stroke(pinyinRect)
                     
-                    
-                    let str = "hàn"
+                    let wordRange = NSRange(location: index - 1, length: 1)
+                    let word = textStorage.attributedSubstring(from: wordRange).string
+                    let pinyin = word.pinyin()
+                    print("word", word, "pinyin", pinyin)
+//                    let str = "hàn"
 
                     
                     let pinyinFontSize = self.fontDesc.pointSize * 0.7
                     let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: pinyinFontSize)
                     let font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
                     
-                    self.showGlyphs(inRect: pinyinRect, font: font, string: str, context: context)
+                    self.showGlyphs(inRect: pinyinRect, font: font, string: pinyin, context: context)
                     
 //                    let gFont = UIFont.systemFont(ofSize: 10)
 //                    drawPinyinFrames(context, pinyinString: str, font: gFont, inRect: pinyinRect)
