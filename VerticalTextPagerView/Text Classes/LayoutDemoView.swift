@@ -37,7 +37,8 @@ class LayoutDemoView: UIView {
 //        demo2(context)
 //        demo3(context)
 //        demo4(context)
-        demo5(context)
+//        demo5(context)
+        demo6(context)
         
 //        let font = CTFontCreateWithName("宋体" as CFString, 20.0, nil)
 //        let string = "😄"
@@ -340,4 +341,100 @@ class LayoutDemoView: UIView {
         
     }
     
+    // MARK: - demo6, draw glyph paths
+    
+    func demo6(_ context: CGContext) {
+        
+        let text = "Hello, 中國！"
+        let length = text.count
+        let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: 20.0)
+        var matrix = CGAffineTransform.identity
+        var font = CTFontCreateWithFontDescriptor(fontDesc, fontDesc.pointSize, &matrix)
+        
+        UIColor.black.set()
+        context.fill(self.bounds)
+        
+        context.saveGState()
+        
+        let textRect = CGRect(x: 120, y: 200, width: 30, height: 200)
+        
+        let (glyphs, positions) = getGlyphPositions(forString: text, font: font, textRect: textRect, isVerticalLayout: true)
+        
+        context.saveGState()
+        
+//        context.translateBy(x: 0.0, y: textRect.origin.y)
+//        context.translateBy(x: 0.0, y: boundingBox.size.height)
+//        context.scaleBy(x: 1.0, y: -1.0)
+//        context.translateBy(x: 0.0, y: -textRect.origin.y)
+        
+        context.setStrokeColor(UIColor.white.cgColor)
+        context.setLineWidth(1.0)
+        
+        // make rotation
+        matrix = CGAffineTransform(rotationAngle: -.pi/2)
+        font = CTFontCreateWithFontDescriptor(fontDesc, fontDesc.pointSize, &matrix)
+        
+        for i in 0 ..< length {
+            let position = positions[i]
+            var transform = CGAffineTransform(translationX: position.x, y: position.y)
+            if let path = CTFontCreatePathForGlyph(font, glyphs[i], &transform) {
+                context.addPath(path)
+            }
+        }
+        
+        context.strokePath()
+        context.setFillColor(UIColor.red.cgColor)
+        
+        CTFontDrawGlyphs(font, glyphs, positions, length, context)
+        
+        context.restoreGState()
+        
+        context.restoreGState()
+    }
+    
+    
+    func getGlyphPositions(forString string: String, font: CTFont, textRect: CGRect, isVerticalLayout: Bool) -> (glyphs: [CGGlyph], positions: [CGPoint]) {
+        
+        let text = NSString(string: string)
+        let length = text.length
+        
+        var chars = [UniChar](repeating: UniChar(), count: length)
+        var glyphs = [CGGlyph](repeating: CGGlyph(), count: length)
+        var positions = [CGPoint](repeating: .zero, count: length)
+        var advances = [CGSize](repeating: .zero, count: length)
+        
+        text.getCharacters(&chars, range: NSRange(location: 0, length: length))
+        CTFontGetGlyphsForCharacters(font, chars, &glyphs, length)
+        let orientation: CTFontOrientation = isVerticalLayout ? .vertical : .default
+        
+        let sum = CTFontGetAdvancesForGlyphs(font, orientation, glyphs, &advances, length)
+        print("CTFontGetAdvancesForGlyphs, sum", sum)
+        
+        if let context = UIGraphicsGetCurrentContext() {
+            context.setStrokeColor(UIColor.red.cgColor)
+            context.stroke(textRect)
+        }
+        
+        var position = textRect.origin
+        for i in 0 ..< length {
+            positions[i] = CGPoint(x: position.x, y: position.y)
+            let advance = advances[i]
+            print("advance", advance)
+            if isVerticalLayout {
+                position.x += advance.height
+                position.y += advance.width
+            } else {
+                position.x += advance.width
+                position.y += advance.height
+            }
+            
+        }
+        
+        if isVerticalLayout {
+            positions.reverse()
+        }
+        
+        
+        return (glyphs, positions)
+    }
 }

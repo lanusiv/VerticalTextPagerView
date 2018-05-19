@@ -28,10 +28,16 @@ class CTSelectionView: UIView, TextViewSelection {
     
     let columnCount = 1
     
+    let fontSize: CGFloat = 20.0
+    var fontDesc: UIFontDescriptor!
+    
+    let showPinyin = true
+    
     // MARK: - initializers
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: fontSize)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -42,6 +48,25 @@ class CTSelectionView: UIView, TextViewSelection {
         print("selectionView.frame", selectionView.frame)
         selectionView.backgroundColor = .clear
         addSubview(selectionView)
+        
+        // init attributes
+        fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: fontSize)
+        
+        var settings = [CTParagraphStyleSetting]()
+        let factor: CGFloat = 0.1
+        var lineSpacing: CGFloat = fontSize * factor
+        settings.append(CTParagraphStyleSetting(spec: .lineSpacingAdjustment, valueSize: MemoryLayout<CGFloat>.size, value: &lineSpacing))
+        var paragraphSpacingBefore: CGFloat = fontSize * factor
+        settings.append(CTParagraphStyleSetting(spec: .paragraphSpacingBefore, valueSize: MemoryLayout<CGFloat>.size, value: &paragraphSpacingBefore))
+        var paragraphSpacing: CGFloat = fontSize * factor
+        settings.append(CTParagraphStyleSetting(spec: .paragraphSpacing, valueSize: MemoryLayout<CGFloat>.size, value: &paragraphSpacing))
+        
+        let style = CTParagraphStyleCreate(settings, settings.count)
+        stringAttributes[.paragraphStyle] = style
+        
+//        let kern: CGFloat = 43.0
+//        stringAttributes[.kern] = kern
+        
     }
     
     override func draw(_ rect: CGRect) {
@@ -53,13 +78,287 @@ class CTSelectionView: UIView, TextViewSelection {
         context.scaleBy(x: 1.0, y: -1.0)
         context.textMatrix = .identity
         
+//        test(context)
         self.drawColumnFrames(context)
+        
+        if showPinyin {
+            self.drawPinyin(context)
+        }
+    }
+    
+    // MARK: - draw furiganas for each line
+    
+    func drawPinyin(_ context: CGContext) {
+        guard let frames = self.frames else { return }
+        
+        for frame in frames {
+            let path = CTFrameGetPath(frame)
+            let frameBounds = path.boundingBox
+            let lines = CTFrameGetLines(frame) as! [CTLine]
+            
+            var lineIndex = 0
+            for line in lines {
+                var lineOrigin = CGPoint.zero
+                CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
+                let font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
+                let fontRect = CTFontGetBoundingBox(font)
+                
+                let lineRect = CTLineGetBoundsWithOptions(line, .useOpticalBounds)
+                
+                let lineWidth = fontRect.height //lineRect.height
+                let lineHeight = lineRect.width
+                
+                var vLineRect = CGRect.zero
+                vLineRect.origin.x = lineOrigin.x - lineWidth / 2
+                vLineRect.origin.y = self.bounds.height - lineOrigin.y + frameBounds.origin.y
+                vLineRect.size.width = lineWidth
+                vLineRect.size.height = frameBounds.height
+                
+                // debug, show line rect
+//                context.setStrokeColor(UIColor.red.cgColor)
+//                context.stroke(vLineRect)
+                
+                let stringRangeRef = CTLineGetStringRange(line)
+                let stringRange = NSRange(location: stringRangeRef.location, length: stringRangeRef.length)
+                
+                var previousOffset: CGFloat = 0.0
+//                previousOffset = CTLineGetOffsetForStringIndex(line, 9, nil)
+                for index in stringRange.lowerBound ... stringRange.upperBound {
+                    print("index", index)
+                    if index % 2 != 0 {
+                        continue
+                    }
+                    
+                    let offset = CTLineGetOffsetForStringIndex(line, index, nil)
+                    
+                    // the effective way to calculate one word height
+                    // we don't use fontRect.height because it only gives us the word itself's height, not inclouding space between adjacent words. For example, when kerning is set to be a large value, this way would not work as you wish
+                    let wordHeight = offset - previousOffset
+                    
+                    //
+                    if index > 0 {
+                        // because next index will be (index + 2), its previous is (index + 1)
+                        previousOffset = CTLineGetOffsetForStringIndex(line, index + 1, nil)
+                    }
+//                    previousOffset = offset
+                    
+                    print("offset", offset, "wordHeight", wordHeight, "vLineRect", vLineRect)
+                    var wordRect = CGRect(origin: .zero, size: fontRect.size)
+                    wordRect.origin.x = vLineRect.origin.x
+                    wordRect.origin.y = self.bounds.size.height - offset + vLineRect.origin.y
+                    wordRect.size.height = wordHeight
+                    
+                    // debug, show word rect
+//                    context.setStrokeColor(UIColor.blue.cgColor)
+//                    context.stroke(wordRect)
+                    
+                    print("wordRect", wordRect)
+                    
+                    // debug, show furigana rect
+                    var pinyinRect = CGRect.zero
+                    pinyinRect.origin.x = wordRect.maxX - 2
+                    pinyinRect.origin.y = wordRect.minY
+                    pinyinRect.size.width = 20 // linespacing
+                    pinyinRect.size.height = wordRect.height
+                    
+
+//                    context.setStrokeColor(UIColor.red.cgColor)
+//                    context.stroke(pinyinRect)
+                    
+                    
+                    let str = "hàn"
+
+                    
+                    let pinyinFontSize = self.fontDesc.pointSize * 0.7
+                    let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: pinyinFontSize)
+                    let font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
+                    
+                    self.showGlyphs(inRect: pinyinRect, font: font, string: str, context: context)
+                    
+//                    let gFont = UIFont.systemFont(ofSize: 10)
+//                    drawPinyinFrames(context, pinyinString: str, font: gFont, inRect: pinyinRect)
+                    
+                }
+//                break
+                lineIndex += 1
+            }
+            
+            CTFrameDraw(frame, context)
+        }
+    }
+    
+    func drawPinyinFrames(_ context: CGContext, pinyinString: String, font: CTFont, inRect rect: CGRect) {
+        let attrString = NSMutableAttributedString(string: pinyinString)
+        let fullRange = NSRange(location: 0, length: pinyinString.count)
+        attrString.addAttribute(.font, value: font, range: fullRange)
+        
+        var alignment = CTTextAlignment.center
+        let alignmentSetting = CTParagraphStyleSetting(spec: .alignment, valueSize: MemoryLayout.size(ofValue: alignment), value: &alignment)
+        var settings = [CTParagraphStyleSetting]()
+        settings.append(alignmentSetting)
+        let style = CTParagraphStyleCreate(settings, settings.count)
+        attrString.addAttribute(.paragraphStyle, value: style, range: fullRange)
+        
+        let path = CGMutablePath()
+        path.addRect(rect)
+        var frameAttributes: CFDictionary?
+        if isVerticalLayout {
+            frameAttributes = [kCTFrameProgressionAttributeName as NSAttributedStringKey: NSNumber(value: CTFrameProgression.rightToLeft.rawValue)] as CFDictionary
+        } else {
+            frameAttributes = nil
+        }
+        
+        let framesetter = CTFramesetterCreateWithAttributedString(attrString)
+        let gframe = CTFramesetterCreateFrame(
+            framesetter, CFRangeMake(0, 0), path, frameAttributes)
+        
+        CTFrameDraw(gframe, context)
+    }
+    
+    func showGlyphs(inRect rect: CGRect, font: UIFont, string: String, context: CGContext) {
+        // Get the string length.
+        let count: CFIndex = CFStringGetLength(string as CFString)
+        
+        // Allocate our buffers for characters and glyphs.
+        var characters = [UniChar](repeating: UniChar(), count: count)
+        var glyphs = [CGGlyph](repeating: CGGlyph(), count: count)
+        
+        // Get the characters from the string.
+        CFStringGetCharacters(string as CFString, CFRangeMake(0, count), &characters)
+        
+        // Get the glyphs for the characters.
+        CTFontGetGlyphsForCharacters(font, &characters, &glyphs, count)
+        
+//        let glyphHeight = rect.height / CGFloat(count)
+        var positions = [CGPoint](repeating: CGPoint.zero, count: count)
+
+        var advances = [CGSize](repeating: .zero, count: count)
+        let sum = CTFontGetAdvancesForGlyphs(font, .vertical, glyphs, &advances, count)
+        print("sum", sum)
+        
+//        context.setFillColor(UIColor.red.withAlphaComponent(0.3).cgColor)
+//        context.fill(rect)
+        let fontRect = CTFontGetBoundingBox(font)
+        var tunedRect = rect
+        let height = fontRect.width / 2 * CGFloat(count)//CGFloat(sum) - rect.size.height
+        tunedRect.origin.y -= (height - rect.size.height) / 2
+        tunedRect.size.height = height
+//        if rect.size.height < height {
+//            tunedRect.origin.y -= (height - rect.size.height) / 2
+//            tunedRect.size.height = height
+//        } else if rect.size.height > height {
+//
+//        }
+//        context.setStrokeColor(UIColor.blue.cgColor)
+//        context.stroke(tunedRect)
+        
+        var columnRects = [CGRect](repeating: CGRect.zero, count: count)
+        // Set the first column to cover the entire view.
+        columnRects[0] = tunedRect
+        // Divide the columns equally across the frame's width.
+        let columnHeight = tunedRect.size.height / CGFloat(count)
+        
+        for column in 0 ..< count - 1 {
+            let (slice, remainder) = columnRects[column].divided(atDistance: columnHeight, from: .maxYEdge)
+            columnRects[column] = slice
+            columnRects[column + 1] = remainder
+        }
+        
+        print("rect", tunedRect)
+        for i in 0 ..< columnRects.count {
+            positions[i] = columnRects[i].origin
+            positions[i].y = columnRects[i].maxY
+            print("position #\(i)", positions[i])
+        }
+        
+        // recreate font for glyph rotation
+        let fontDesc = font.fontDescriptor
+        var matrix = CGAffineTransform(rotationAngle: -.pi/2)
+        let ctFont = CTFontCreateWithFontDescriptor(fontDesc, fontDesc.pointSize, &matrix)
+//        drawGlyphPath(glyphs, &positions, ctFont, context)
+        let color: UIColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+        context.setFillColor(color.cgColor)
+        CTFontDrawGlyphs(ctFont, glyphs, positions, count, context)
+    }
+    
+    fileprivate func drawGlyphPath(_ glyphs: [CGGlyph], _ positions: inout [CGPoint], _ font: CTFont, _ context: CGContext) {
+        var index = 0
+        for glyph in glyphs {
+            let position = positions[index]
+            var transform = CGAffineTransform(translationX: position.x, y: position.y)
+            if let glyphPath = CTFontCreatePathForGlyph(font, glyph, &transform) {
+                print("glyphPath", glyphPath)
+                context.setStrokeColor(UIColor.red.cgColor)
+                context.addPath(glyphPath)
+                //                context.fillPath()
+            }
+            index += 1
+        }
+        context.setLineWidth(1.0)
+        context.strokePath()
+        //        context.fillPath()
+    }
+    
+    func getGlyphPositions(forString string: String, font: CTFont, textRect: CGRect, isVerticalLayout: Bool) -> (glyphs: [CGGlyph], positions: [CGPoint]) {
+        
+        let text = NSString(string: string)
+        let length = text.length
+        
+        var chars = [UniChar](repeating: UniChar(), count: length)
+        var glyphs = [CGGlyph](repeating: CGGlyph(), count: length)
+        var positions = [CGPoint](repeating: .zero, count: length)
+        var advances = [CGSize](repeating: .zero, count: length)
+        
+        text.getCharacters(&chars, range: NSRange(location: 0, length: length))
+        CTFontGetGlyphsForCharacters(font, chars, &glyphs, length)
+        let orientation: CTFontOrientation = isVerticalLayout ? .vertical : .default
+        
+        let sum = CTFontGetAdvancesForGlyphs(font, orientation, glyphs, &advances, length)
+        print("CTFontGetAdvancesForGlyphs, sum", sum)
+        
+        if let context = UIGraphicsGetCurrentContext() {
+            context.setStrokeColor(UIColor.red.cgColor)
+            context.stroke(textRect)
+        }
+        
+        var position = textRect.origin
+        for i in 0 ..< length {
+            positions[i] = CGPoint(x: position.x, y: position.y)
+            let advance = advances[i]
+            print("advance", advance)
+            if isVerticalLayout {
+                position.x += advance.height
+                position.y += advance.width
+            } else {
+                position.x += advance.width
+                position.y += advance.height
+            }
+            
+        }
+        
+        if isVerticalLayout {
+            positions.reverse()
+        }
+        
+        
+        return (glyphs, positions)
+    }
+    
+    func printRange(selectionRange: CFRange) {
+        let selectionString = self.textStorage.attributedSubstring(from: NSRange(location: selectionRange.location, length: selectionRange.length))
+        print("printRange, ", selectionString.string)
+    }
+    
+    func printLine(line: CTLine) {
+        let selectionRange = CTLineGetStringRange(line)
+        let selectionString = self.textStorage.attributedSubstring(from: NSRange(location: selectionRange.location, length: selectionRange.length))
+        print("printLine, ", selectionString.string)
     }
     
     // MARK: - draw frames into columns
     func drawColumnFrames(_ context: CGContext) {
         let string = chineseString
-        let font = CTFontCreateUIFontForLanguage(.system, 20.0, nil)
+        let font = CTFontCreateUIFontForLanguage(.system, fontDesc.pointSize, nil)
         self.stringAttributes[.font] = font
         if isVerticalLayout {
             self.stringAttributes[.verticalGlyphForm] = NSNumber(value: true)
@@ -112,7 +411,9 @@ class CTSelectionView: UIView, TextViewSelection {
             let frame = CTFramesetterCreateFrame(
                 framesetter, CFRangeMake(startIndex, 0), path,  frameAttributes)
             self.frames?.append(frame)
-            CTFrameDraw(frame, context)
+            if !self.showPinyin {
+                CTFrameDraw(frame, context)
+            }
             
             if let imageDict = self.imageDict {
                 self.images = self.attachImagesWithFrame(imageDict, ctframe: frame)
