@@ -327,18 +327,33 @@ extension SelectionView {
                         let stringRange = CFRangeMake(hitStringIndex - 1, 1)
                         printRange(selectionRange: stringRange)
                         
-                        let wordSelectionRange = NSRange(location: hitStringIndex - 1, length: 1)
+                        var wordSelectionRange = NSRange(location: hitStringIndex - 1, length: 1)
                         self.selectionWord = self.textView.textStorage.attributedSubstring(from: wordSelectionRange).string
                         
                         let offset = CTLineGetOffsetForStringIndex(line, hitStringIndex, nil)
                         
-                        let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: 20.0)
-                        let font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
+                        var font: UIFont
+                        if let afont = self.textView.textStorage.attribute(.font, at: hitStringIndex, effectiveRange: &wordSelectionRange) as? UIFont {
+                            print("font", afont)
+                            font = afont
+                        } else {
+                            print("no font info found")
+                            let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: 20.0)
+                            font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
+                        }
+                        
+                        
                         let rect = CTFontGetBoundingBox(font)
                         
                         var wordRect = CGRect(origin: .zero, size: rect.size)
                         wordRect.origin.x = lineBounds.origin.x + (lineBounds.size.width - rect.size.width) / 2
                         wordRect.origin.y = frameBounds.size.height - offset + frameBounds.origin.y
+                        
+                        if hitStringIndex > 0 {
+                            let preOffset = CTLineGetOffsetForStringIndex(line, hitStringIndex - 1, nil)
+                            let wordheight = offset - preOffset
+                            wordRect.size.height = wordheight
+                        }
                         
                         self.selectionWordRect = wordRect
                         

@@ -64,7 +64,7 @@ class CTSelectionView: UIView, TextViewSelection {
         let style = CTParagraphStyleCreate(settings, settings.count)
         stringAttributes[.paragraphStyle] = style
         
-//        let kern: CGFloat = 43.0
+//        let kern: CGFloat = 73.0
 //        stringAttributes[.kern] = kern
         
     }
