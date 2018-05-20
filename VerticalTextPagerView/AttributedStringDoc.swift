@@ -425,19 +425,48 @@ class AttributedStringDoc: NSObject {
                             assert(paragStyles.count >= ASD_ParagraphStylesSupported, "Wrong number of paragraph styles")
                             var settings = [CTParagraphStyleSetting]()
                             var alignment: CTTextAlignment
-                            var floatValues = [CGFloat](repeating: 0.0, count: ASD_ParagraphStylesSupported)
+                            var floatValues = [CGFloat](repeating: 20.0, count: ASD_ParagraphStylesSupported)
                             
                             
                             alignment = CTTextAlignment(rawValue: UInt8(paragStyles[0]))!
                             settings.append(CTParagraphStyleSetting(spec: .alignment, valueSize: MemoryLayout.size(ofValue: alignment), value: &alignment))
                            
-                            
+                            // for loop doesn't work because value always changed???!!!
+                            /*
                             var index = 1
                             for styleSpec in ParagraphSpecs {
-                                settings.append(CTParagraphStyleSetting(spec: styleSpec, valueSize: MemoryLayout<CGFloat>.size, value: &floatValues[index]))
+                                floatValues[index] = paragStyles[index]
+                                print("floatValues[\(index)]", floatValues[index])
+
+
+                                settings.append(CTParagraphStyleSetting(spec: styleSpec, valueSize: MemoryLayout<CGFloat>.size, value: &(floatValues[index])))
+                                print("styleSpec", styleSpec.rawValue, "paragStyles[\(index)]", floatValues[index])
                                 index += 1
-                            }
+                            }*/
+ 
+                            
+                            
+                            var lineSpacing: CGFloat = 10//paragStyles[1]
+                            settings.append(CTParagraphStyleSetting(spec: .lineSpacingAdjustment, valueSize: MemoryLayout<CGFloat>.size, value: &lineSpacing))
+                            var paragraphSpacing = paragStyles[2]
+                            settings.append(CTParagraphStyleSetting(spec: .paragraphSpacing, valueSize: MemoryLayout<CGFloat>.size, value: &paragraphSpacing))
+                            var maximumLineHeight = paragStyles[3]
+                             settings.append(CTParagraphStyleSetting(spec: .maximumLineHeight, valueSize: MemoryLayout<CGFloat>.size, value: &maximumLineHeight))
+                            var minimumLineHeight = paragStyles[4]
+                             settings.append(CTParagraphStyleSetting(spec: .minimumLineHeight, valueSize: MemoryLayout<CGFloat>.size, value: &minimumLineHeight))
+                            var headIndent = paragStyles[5]
+                             settings.append(CTParagraphStyleSetting(spec: .headIndent, valueSize: MemoryLayout<CGFloat>.size, value: &headIndent))
+                            var tailIndent = paragStyles[6]
+                             settings.append(CTParagraphStyleSetting(spec: .tailIndent, valueSize: MemoryLayout<CGFloat>.size, value: &tailIndent))
+                            var firstLineHeadIndent = paragStyles[7]
+                             settings.append(CTParagraphStyleSetting(spec: .firstLineHeadIndent, valueSize: MemoryLayout<CGFloat>.size, value: &firstLineHeadIndent))
+                            var defaultTabInterval = paragStyles[8]
+                             settings.append(CTParagraphStyleSetting(spec: .defaultTabInterval, valueSize: MemoryLayout<CGFloat>.size, value: &defaultTabInterval))
+                            var maximumLineSpacing = 1
+                            settings.append(CTParagraphStyleSetting(spec: .maximumLineSpacing, valueSize: MemoryLayout<CGFloat>.size, value: &maximumLineSpacing))
+                            
                             let style = CTParagraphStyleCreate(settings, settings.count)
+                            print("style", style)
                             attrString.addAttribute(.paragraphStyle, value: style, range: range)
                             
                         } else {
