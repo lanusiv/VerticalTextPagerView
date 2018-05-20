@@ -41,6 +41,8 @@ class SelectionView: UIView {
     var selectionWordRect: CGRect?
     
     var dragGestureRecognizer: UIPanGestureRecognizer!
+    
+    var isDoubleTap = false
 
     // MARK: - static method
     
@@ -133,14 +135,20 @@ extension SelectionView {
     }
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(copy(_:)) {
-            return true
-        } else if action == #selector(_lookup(_:)) {
-            if let _ = getRootViewController() {
+        if isDoubleTap {
+            if action == #selector(pinyin(_:)) {
                 return true
             }
+        } else {
+            if action == #selector(copy(_:)) {
+                return true
+            } else if action == #selector(_lookup(_:)) {
+                if let _ = getRootViewController() {
+                    return true
+                }
+            }
         }
-        return super.canPerformAction(action, withSender: sender)
+        return false//super.canPerformAction(action, withSender: sender)
     }
     
     override func copy(_ sender: Any?) {
@@ -180,6 +188,10 @@ extension SelectionView {
         return controller
     }
     
+    @objc func pinyin(_ sender: Any?) {
+        hideSelectionMenu()
+    }
+    
     // MARK: gesture recognizer methods
     
     @objc func viewDidLongPress(_ sender: UILongPressGestureRecognizer) {
@@ -187,13 +199,32 @@ extension SelectionView {
     }
     
     @objc func viewDidDoubleTap(_ sender: UITapGestureRecognizer) {
-        self.startSelection(sender)
+//        self.startSelection(sender)
+        self.isDoubleTap = true
+        if self.becomeFirstResponder(), let rect = self.getHitPointRect(at: sender.location(in: self)),  let word = self.selectionWord  {
+            let pinyin = word.pinyin()
+            let menu = UIMenuController.shared
+            let item = UIMenuItem(title: pinyin, action: #selector(pinyin(_:)))
+            menu.menuItems = [item]
+            var aRect = rect
+            aRect.origin.y = self.bounds.height - rect.origin.y
+            aRect.origin.y -= aRect.size.height / 2
+            aRect.size.height *= 1.5
+            menu.setTargetRect(aRect, in: self)
+            menu.setMenuVisible(true, animated: true)
+        }
     }
     
     @objc func viewDidTap(_ sender: UITapGestureRecognizer) {
+        print("viewDidTap")
+        if self.isDoubleTap && self.isMenuVisible() {
+            self.isDoubleTap = false
+            hideSelectionMenu()
+        }
+        
         if sender.state == .ended {
             let position = sender.location(in: self)
-            
+
             if let selectionPath = self.selectionPath {
                 let rightPos = CGPoint(x: position.x, y: self.bounds.height - position.y)
                 let inBounds = selectionPath.contains(rightPos)
@@ -280,12 +311,21 @@ extension SelectionView {
     }
     
     func hideSelectionMenu() {
+        self.isDoubleTap = false
         if self.isFirstResponder {
             let menu = UIMenuController.shared
             if menu.isMenuVisible {
                 menu.setMenuVisible(false, animated: true)
             }
         }
+    }
+    
+    func isMenuVisible() -> Bool {
+        if self.isFirstResponder {
+            let menu = UIMenuController.shared
+            return menu.isMenuVisible
+        }
+        return false
     }
     
     func clearSelection() {
