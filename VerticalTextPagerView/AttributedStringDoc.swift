@@ -83,6 +83,9 @@ class AttributedStringDoc: NSObject {
     var fileName = ""
     // document filename
     var attributedString: NSAttributedString?
+    
+    var textImagesDict: [[String : Any]]? // dict for text images
+    
     // document text storage
     var pageLayout = [AnyHashable : Any]()//[Int : [String : Any]]()
     // page layout information
@@ -142,6 +145,41 @@ class AttributedStringDoc: NSObject {
     convenience init(withFileNameFromBundle fileName: String) {
         self.init()
         self.setFileName(fileName)
+    }
+    
+    convenience init(attributedString: NSAttributedString, attributes: [String : Any]?) {
+        self.init()
+        self.attributedString = attributedString
+        if let dict = attributes {
+            if let columnCount = dict["columnCount"] as? Int {
+                self.columnCount = columnCount
+            }
+            if let showPageNumbers = dict["showPageNumbers"] as? Bool {
+                self.showPageNumbers = showPageNumbers
+            }
+            if let isVerticalOrientation = dict["isVerticalOrientation"] as? Bool {
+                self.verticalOrientation = isVerticalOrientation
+            }
+            if let backgroundColor = dict["backgroundColor"] as? UIColor {
+                self.backgroundColor = backgroundColor.cgColor
+            }
+            if let textImagesDict = dict["textImagesDict"] as? [[String : Any]] {
+                self.textImagesDict = textImagesDict
+            }
+        } else {
+            self.columnCount = 1
+        }
+    }
+    
+    convenience init(attributedString: NSAttributedString, isVerticalOrientation: Bool = false, showPageNumbers: Bool = false) {
+        self.init(attributedString: attributedString, attributes: nil)
+        self.verticalOrientation = isVerticalOrientation
+        self.showPageNumbers = showPageNumbers
+    }
+    
+    convenience init(text: String) {
+        let attributedText = NSAttributedString(string: text)
+        self.init(attributedString: attributedText)
     }
     
     private func setFileName(_ fileName: String) {

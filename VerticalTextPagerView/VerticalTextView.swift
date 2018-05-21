@@ -25,25 +25,25 @@ class VerticalTextView: TextInterface {
     
     var text: String? {
         didSet {
-            self.attributedText = nil
-            self.document = nil
-            loadText()
+            if text != nil {
+                loadPlainText()
+            }
         }
     }
     
     var attributedText: NSAttributedString? {
         didSet {
-            self.text = nil
-            self.document = nil
-            loadText()
+            if attributedText != nil {
+                loadAttributedText()
+            }
         }
     }
     
     var document: String? {
         didSet {
-            self.text = nil
-            self.attributedText = nil
-            loadText()
+            if document != nil {
+                loadDocument()
+            }
         }
     }
     
@@ -54,16 +54,25 @@ class VerticalTextView: TextInterface {
         self.textView = textView
     }
     
-    private func loadText() {
-        if let text = self.text {
-            
-        } else if let attributedText = self.attributedText {
-            
-        } else if let document = self.document {
-            let asd = AttributedStringDoc(withFileNameFromBundle: document)
-            textView.reset(doc: asd)
-        }
-        
+    private func loadDocument() {
+        let asd = AttributedStringDoc(withFileNameFromBundle: document!)
+        textView.reset(doc: asd)
+    }
+    
+    private func loadPlainText() {
+        let asd = AttributedStringDoc(text: text!)
+        textView.reset(doc: asd)
+    }
+    
+    private func loadAttributedText() {
+        let asd = AttributedStringDoc(attributedString: attributedText!, isVerticalOrientation: true)
+        textView.reset(doc: asd)
+    }
+    
+    func loadText(_ text: NSAttributedString, withTextImages textImagesDict: [[String : Any]]) {
+        let asd = AttributedStringDoc(attributedString: text, isVerticalOrientation: true)
+        asd.textImagesDict = textImagesDict
+        textView.reset(doc: asd)
     }
     
 }

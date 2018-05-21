@@ -20,6 +20,8 @@ class ViewController: UIViewController, SamplesDelegate {
     
     var selectedSampleName: String = "Article.xml"
     
+    var textView: VerticalTextView!
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //        print("prepareForSegue: \(segue.identifier), destination: \(segue.destination)")
         if segue.identifier == "show samples", let naviCtl = segue.destination as? UINavigationController, let samplesCtl = naviCtl.topViewController as? SamplesViewController {
@@ -30,7 +32,13 @@ class ViewController: UIViewController, SamplesDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: selectedSampleName))
+//        pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: selectedSampleName))
+        textView = VerticalTextView(textView: pagerView)
+//        textView.text = "Hello"
+//        textView.document = selectedSampleName
+        if let (attributedString, textImagesDict) = loadText() {
+            textView.loadText(attributedString, withTextImages: textImagesDict)
+        }
         
         self.title = selectedSampleName.components(separatedBy: ".")[0]
     }
@@ -42,7 +50,8 @@ class ViewController: UIViewController, SamplesDelegate {
     // MARK: - Samples controller delegate methods
     
     func samplesController(_ controller: SamplesViewController, didSelectString fileName: String) {
-        self.pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: fileName))
+//        self.pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: fileName))
+        textView.document = fileName
         selectedSampleName = fileName
         self.title = selectedSampleName.components(separatedBy: ".")[0]
         controller.dismiss(animated: true)

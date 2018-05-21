@@ -319,7 +319,13 @@ class CoreTextView: UIView, TextViewSelection {
                     // collect frames
                     self.frames!.append(frame!)
                     // After drawing frame, draw selected frame highlight rects
-                    //                    [self hilightSelectedRangesForFrame:frameInfo inContext:context];
+                    //                    [self hilightSelectedRangesForFrame:frameInfo inContext:context]
+                    
+                    // draw text images
+                    if let textImagesDict = document.textImagesDict {
+                        let textImages = self.attachImagesWithFrame(textImagesDict, ctframe: frame!)
+                        self.drawImages(context, textImages)
+                    }
                 }
             } else if type == .picture && !self.layoutOnlyOnDraw {
                 // This document 'frame' is an image, so draw it using CGImage
@@ -381,4 +387,74 @@ class CoreTextView: UIView, TextViewSelection {
 
 extension CoreTextView {
     
+    func attachImagesWithFrame(_ imagesDict: [[String: Any]],
+                               ctframe: CTFrame) -> [(image: UIImage, frame: CGRect)] {
+        //1
+        let lines = CTFrameGetLines(ctframe) as NSArray
+        //2
+        var origins = [CGPoint](repeating: .zero, count: lines.count)
+        CTFrameGetLineOrigins(ctframe, CFRangeMake(0, 0), &origins)
+        
+        
+        var reusltImages: [(image: UIImage, frame: CGRect)] = []
+        var imageIndex = 0
+        if imagesDict.count <= 0 {
+            return reusltImages
+        }
+        //3
+        var nextImage = imagesDict[imageIndex]
+        guard var imgLocation = nextImage["location"] as? Int else {
+            return reusltImages
+        }
+        //4
+        for lineIndex in 0..<lines.count {
+            let line = lines[lineIndex] as! CTLine
+            //5
+            if let glyphRuns = CTLineGetGlyphRuns(line) as? [CTRun],
+                let imageFilename = nextImage["filename"] as? String,
+                let img = UIImage(named: imageFilename)  {
+                for run in glyphRuns {
+                    // 1
+                    let runRange = CTRunGetStringRange(run)
+                    if runRange.location > imgLocation || runRange.location + runRange.length <= imgLocation {
+                        continue
+                    }
+                    //2
+                    var imgBounds: CGRect = .zero
+                    var ascent: CGFloat = 0
+                    imgBounds.size.width = CGFloat(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, nil, nil))
+                    imgBounds.size.height = ascent
+                    //3
+                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 2, nil)
+                    //                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
+                    let path = CTFrameGetPath(ctframe)
+                    let frameBounds = path.boundingBox
+                    imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2 + frameBounds.origin.x
+                    imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y
+                    //4
+                    reusltImages += [(image: img, frame: imgBounds)]
+                    //5
+                    imageIndex += 1
+                    if imageIndex < imagesDict.count {
+                        nextImage = imagesDict[imageIndex]
+                        imgLocation = (nextImage["location"] as AnyObject).intValue
+                    }
+                }
+            }
+        }
+        return reusltImages
+    }
+    
+    func drawImages(_ context: CGContext, _ images: [(image: UIImage, frame: CGRect)]) {
+        for imageData in images {
+            if let image = imageData.image.cgImage {
+                let imgBounds = imageData.frame
+                print("imgBounds", imgBounds)
+                context.setStrokeColor(UIColor.red.cgColor)
+                context.stroke(imgBounds)
+                context.draw(image, in: imgBounds)
+                //                print("imgBounds", imgBounds)
+            }
+        }
+    }
 }
