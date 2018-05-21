@@ -389,51 +389,54 @@ extension CoreTextView {
     
     func attachImagesWithFrame(_ imagesDict: [[String: Any]],
                                ctframe: CTFrame) -> [(image: UIImage, frame: CGRect)] {
-        //1
-        let lines = CTFrameGetLines(ctframe) as NSArray
-        //2
-        var origins = [CGPoint](repeating: .zero, count: lines.count)
-        CTFrameGetLineOrigins(ctframe, CFRangeMake(0, 0), &origins)
-        
-        
         var reusltImages: [(image: UIImage, frame: CGRect)] = []
-        var imageIndex = 0
         if imagesDict.count <= 0 {
             return reusltImages
         }
+        
+        let lines = CTFrameGetLines(ctframe) as! [CTLine]
+        
+        var origins = [CGPoint](repeating: .zero, count: lines.count)
+        CTFrameGetLineOrigins(ctframe, CFRangeMake(0, 0), &origins)
+        
+        var imageIndex = 0
         //3
         var nextImage = imagesDict[imageIndex]
         guard var imgLocation = nextImage["location"] as? Int else {
             return reusltImages
         }
-        //4
-        for lineIndex in 0..<lines.count {
-            let line = lines[lineIndex] as! CTLine
-            //5
+        
+        for lineIndex in 0 ..< lines.count {
+            let line = lines[lineIndex]
+            
             if let glyphRuns = CTLineGetGlyphRuns(line) as? [CTRun],
                 let imageFilename = nextImage["filename"] as? String,
-                let img = UIImage(named: imageFilename)  {
+                let img = UIImage(named: imageFilename) {
                 for run in glyphRuns {
-                    // 1
+                    
                     let runRange = CTRunGetStringRange(run)
                     if runRange.location > imgLocation || runRange.location + runRange.length <= imgLocation {
                         continue
                     }
-                    //2
+                    
                     var imgBounds: CGRect = .zero
                     var ascent: CGFloat = 0
                     imgBounds.size.width = CGFloat(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, nil, nil))
                     imgBounds.size.height = ascent
-                    //3
-                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 2, nil)
+                    
+                    print("imgLocation", imgLocation, "CTRunGetStringRange(run).location", CTRunGetStringRange(run).location)
+                    var xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil)
+                    if !scrollView.document.showPageNumbers {
+                        xOffset += 20
+                    }
                     //                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
                     let path = CTFrameGetPath(ctframe)
                     let frameBounds = path.boundingBox
                     imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2 + frameBounds.origin.x
                     imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y
-                    //4
+                    
                     reusltImages += [(image: img, frame: imgBounds)]
-                    //5
+                    
                     imageIndex += 1
                     if imageIndex < imagesDict.count {
                         nextImage = imagesDict[imageIndex]

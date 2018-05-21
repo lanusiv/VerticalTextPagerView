@@ -34,11 +34,12 @@ class ViewController: UIViewController, SamplesDelegate {
         
 //        pagerView.reset(doc: AttributedStringDoc(withFileNameFromBundle: selectedSampleName))
         textView = VerticalTextView(textView: pagerView)
-//        textView.text = "Hello"
+//        textView.text = chineseString
 //        textView.document = selectedSampleName
         if let (attributedString, textImagesDict) = loadText() {
             textView.loadText(attributedString, withTextImages: textImagesDict)
         }
+        
         
         self.title = selectedSampleName.components(separatedBy: ".")[0]
     }

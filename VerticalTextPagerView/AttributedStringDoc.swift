@@ -178,8 +178,13 @@ class AttributedStringDoc: NSObject {
     }
     
     convenience init(text: String) {
-        let attributedText = NSAttributedString(string: text)
+        let font = UIFont.systemFont(ofSize: CGFloat(20))
+        let attribute: [NSAttributedStringKey : Any] = [.verticalGlyphForm: NSNumber(value: true), .font: font]
+        let attributedText = NSAttributedString(string: text, attributes: attribute)
+        
         self.init(attributedString: attributedText)
+        self.verticalOrientation = true
+        self.showPageNumbers = true
     }
     
     private func setFileName(_ fileName: String) {
