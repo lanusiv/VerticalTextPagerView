@@ -30,6 +30,7 @@
 		4E24B5BD20A14C26001273E2 /* 002.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E24B5B720A14C26001273E2 /* 002.gif */; };
 		4E24B5BF20A15627001273E2 /* CoreTextDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24B5BE20A15627001273E2 /* CoreTextDemoViewController.swift */; };
 		4E3F6C8620B056570039B946 /* String+Pinyin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3F6C8520B056570039B946 /* String+Pinyin.swift */; };
+		4E58DECD20B2609A000B501F /* VerticalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E58DECC20B2609A000B501F /* VerticalTextView.swift */; };
 		4E82FAC420AD19E500C80EDA /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E82FAC320AD19E500C80EDA /* SelectionView.swift */; };
 		4EA1606120A1491800A4E3F5 /* CTSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */; };
 		4EA1606220A1491800A4E3F5 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605D20A1491800A4E3F5 /* DemoData.swift */; };
@@ -71,6 +72,7 @@
 		4E24B5B720A14C26001273E2 /* 002.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 002.gif; sourceTree = "<group>"; };
 		4E24B5BE20A15627001273E2 /* CoreTextDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTextDemoViewController.swift; sourceTree = "<group>"; };
 		4E3F6C8520B056570039B946 /* String+Pinyin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Pinyin.swift"; sourceTree = "<group>"; };
+		4E58DECC20B2609A000B501F /* VerticalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalTextView.swift; sourceTree = "<group>"; };
 		4E82FAC320AD19E500C80EDA /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
 		4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CTSelectionView.swift; path = "Text Classes/CTSelectionView.swift"; sourceTree = "<group>"; };
 		4EA1605D20A1491800A4E3F5 /* DemoData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DemoData.swift; path = "Text Classes/DemoData.swift"; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				4EA1605D20A1491800A4E3F5 /* DemoData.swift */,
 				4EA1605F20A1491800A4E3F5 /* TextParser.swift */,
 				4E3F6C8520B056570039B946 /* String+Pinyin.swift */,
+				4E58DECC20B2609A000B501F /* VerticalTextView.swift */,
 			);
 			name = "Text Classes";
 			sourceTree = "<group>";
@@ -301,6 +304,7 @@
 				4EA1606C20A1493500A4E3F5 /* SamplesViewController.swift in Sources */,
 				4EA1606220A1491800A4E3F5 /* DemoData.swift in Sources */,
 				4EA1606520A1491800A4E3F5 /* LayoutDemoView.swift in Sources */,
+				4E58DECD20B2609A000B501F /* VerticalTextView.swift in Sources */,
 				4EA1606120A1491800A4E3F5 /* CTSelectionView.swift in Sources */,
 				4E3F6C8620B056570039B946 /* String+Pinyin.swift in Sources */,
 				4EC1051C20A1475F00AE51F1 /* ViewController.swift in Sources */,
