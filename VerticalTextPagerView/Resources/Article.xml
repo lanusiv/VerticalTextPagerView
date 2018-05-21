@@ -32,14 +32,14 @@
                         <key>NSParagraphStyle</key>
                         <array>
                             <integer>3</integer><!-- text alignment -->
-                            <real>0.0</real>    <!-- line spacing -->
+                            <real>2.0</real>    <!-- line spacing -->
                             <real>0</real>     <!-- paragraph spacing -->
                             <real>0.0</real>    <!-- maximun line height -->
                             <real>31</real>     <!-- minimun line height -->
                             <real>0.0</real>    <!-- head indent -->
                             <real>0.0</real>    <!-- tail indent -->
                             <real>0.0</real>    <!-- first line head indent -->
-                            <real>0.0</real>     <!-- tab interval, must be 0.0 for vertical text layout -->
+                            <real>36</real>     <!-- tab interval, must be 0.0 for vertical text layout -->
                         </array>
                         <key>CTVerticalForms</key>
                         <integer>1</integer>

@@ -44,6 +44,9 @@ class SelectionView: UIView {
     
     var isDoubleTap = false
 
+    // test
+    var hitPoint: CGPoint?
+    
     // MARK: - static method
     
     static func initSelectionView<T : UIView & TextViewSelection>(_ view: T) -> SelectionView {
@@ -119,6 +122,12 @@ class SelectionView: UIView {
 //            context.setStrokeColor(UIColor.red.cgColor)
 //            context.setLineWidth(3.0)
 //            context.stroke(selectionPath.boundingBox)
+        }
+        if let hitPoint = self.hitPoint {
+            let size: CGFloat = 10
+            var rect = CGRect(x: hitPoint.x - size / CGFloat(2), y: hitPoint.y - size / CGFloat(2), width: size, height: size)
+            context.setFillColor(UIColor.red.cgColor)
+            context.fill(rect)
         }
     }
     
@@ -358,7 +367,8 @@ extension SelectionView {
                     if lineBounds.contains(rightPosition) {
                         var apos = position
                         if self.textView.isVerticalLayout {
-                            apos = CGPoint(x: position.y, y: position.x)
+                            let positionOffset: CGFloat = 10 // there is offset for right position, which is half width of a font
+                            apos = CGPoint(x: position.y + positionOffset, y: position.x)
                         }
                         // CTLineGetStringIndexForPosition only cares point.x, so it is not very reliable
                         let hitStringIndex = CTLineGetStringIndexForPosition(line, apos)
@@ -386,7 +396,7 @@ extension SelectionView {
                         let rect = CTFontGetBoundingBox(font)
                         
                         var wordRect = CGRect(origin: .zero, size: rect.size)
-                        wordRect.origin.x = lineBounds.origin.x + (lineBounds.size.width - rect.size.width) / 2
+                        wordRect.origin.x = lineBounds.origin.x + (lineBounds.size.width - rect.size.height) / 2
                         wordRect.origin.y = frameBounds.size.height - offset + frameBounds.origin.y
                         
                         if hitStringIndex > 0 {
@@ -394,6 +404,7 @@ extension SelectionView {
                             let wordheight = offset - preOffset
                             wordRect.size.height = wordheight
                         }
+                        wordRect.size.width = rect.height
                         
                         self.selectionWordRect = wordRect
                         
