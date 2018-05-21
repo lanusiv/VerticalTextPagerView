@@ -31,7 +31,7 @@ class CTSelectionView: UIView, TextViewSelection {
     let fontSize: CGFloat = 20.0
     var fontDesc: UIFontDescriptor!
     
-    let showPinyin = true
+    let showPinyin = false
     
     // MARK: - initializers
     
@@ -470,6 +470,7 @@ class CTSelectionView: UIView, TextViewSelection {
         var origins = [CGPoint](repeating: .zero, count: lines.count)
         CTFrameGetLineOrigins(ctframe, CFRangeMake(0, 0), &origins)
         
+        
         var reusltImages: [(image: UIImage, frame: CGRect)] = []
         var imageIndex = 0
         if imagesDict.count <= 0 {
@@ -499,12 +500,12 @@ class CTSelectionView: UIView, TextViewSelection {
                     imgBounds.size.width = CGFloat(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, nil, nil))
                     imgBounds.size.height = ascent
                     //3
-                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, nil)
+                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil)
 //                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
                     let path = CTFrameGetPath(ctframe)
                     let frameBounds = path.boundingBox
-                    imgBounds.origin.x = origins[lineIndex].x
-                    imgBounds.origin.y = frameBounds.height - xOffset //origins[lineIndex].y
+                    imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2
+                    imgBounds.origin.y = self.bounds.height - xOffset// + origins[lineIndex].y
                     //4
                     reusltImages += [(image: img, frame: imgBounds)]
                     //5
@@ -523,6 +524,9 @@ class CTSelectionView: UIView, TextViewSelection {
         for imageData in images {
             if let image = imageData.image.cgImage {
                 let imgBounds = imageData.frame
+//                print("imgBounds", imgBounds)
+//                context.setStrokeColor(UIColor.red.cgColor)
+//                context.stroke(imgBounds)
                 context.draw(image, in: imgBounds)
 //                print("imgBounds", imgBounds)
             }

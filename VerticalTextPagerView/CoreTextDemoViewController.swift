@@ -10,10 +10,16 @@ import UIKit
 
 class CoreTextDemoViewController: UIViewController {
 
+    @IBOutlet weak var ctSelectionView: CTSelectionView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        if let (attributedString, imageDict) = loadText() {
+            ctSelectionView.attrString = attributedString
+            ctSelectionView.imageDict = imageDict
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {

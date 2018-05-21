@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 func loadText() -> (attributedString: NSAttributedString, images: [[String : Any]])? {
-    guard let file = Bundle.main.path(forResource: "demo2", ofType: "txt") else { return nil }
+    guard let file = Bundle.main.path(forResource: "demo", ofType: "txt") else { return nil }
     
     do {
         let text = try String(contentsOfFile: file, encoding: .utf8)
@@ -36,7 +36,7 @@ func loadText() -> (attributedString: NSAttributedString, images: [[String : Any
             
             let parts = text[markupRange].components(separatedBy: "<")
             
-            let font = UIFont.systemFont(ofSize: 24.0)
+            let font = UIFont.systemFont(ofSize: 14.0)
             
             let attrs = [.foregroundColor: UIColor.black, .font: font, .verticalGlyphForm: NSNumber(value: true)] as [NSAttributedStringKey : Any]
             let str = NSMutableAttributedString(string: parts[0], attributes: attrs)

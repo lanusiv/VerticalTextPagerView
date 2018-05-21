@@ -133,6 +133,9 @@
                         <viewLayoutGuide key="safeArea" id="y3L-mL-r49"/>
                     </view>
                     <navigationItem key="navigationItem" title="CoreText Demo" id="7Y4-5e-3gQ"/>
+                    <connections>
+                        <outlet property="ctSelectionView" destination="MkO-HV-vgc" id="aue-Oh-0Wi"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WAG-lO-ZJc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
