@@ -431,21 +431,17 @@ extension CoreTextView {
                     imgBounds.size.height = ascent
                     
                     print("imgLocation", imgLocation, "CTRunGetStringRange(run).location", CTRunGetStringRange(run).location)
-                    var xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil)
-                    // to be tuned
-//                    if !scrollView.document.showPageNumbers {
-//                        xOffset += 20
-//                    }
-                    //                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
+                    
                     let path = CTFrameGetPath(ctframe)
                     let frameBounds = path.boundingBox
+                    let topOffset = self.bounds.maxY - frameBounds.maxY
+                    
+                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil) + topOffset
+                    
                     imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2 + frameBounds.origin.x
 //                    imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y
                     
-                    let topOffset = self.bounds.maxY - frameBounds.maxY
-                    let correctOffset = xOffset - topOffset
-                    
-                    imgBounds.origin.y = frameBounds.size.height - correctOffset + frameBounds.origin.y
+                    imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y
                     
                     reusltImages += [(image: img, frame: imgBounds)]
                     

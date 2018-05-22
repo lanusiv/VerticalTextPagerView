@@ -72,7 +72,7 @@ class VerticalTextView: TextInterface {
     func loadText(_ text: NSAttributedString, withTextImages textImagesDict: [[String : Any]]) {
         let asd = AttributedStringDoc(attributedString: text, isVerticalOrientation: true)
         asd.textImagesDict = textImagesDict
-        asd.showPageNumbers = true // showPageNumbers must be taken into consideration when handling position events
+//        asd.showPageNumbers = true // showPageNumbers must be taken into consideration when handling position events
         textView.reset(doc: asd)
     }
     

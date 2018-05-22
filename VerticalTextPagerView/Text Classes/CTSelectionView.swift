@@ -79,6 +79,9 @@ class CTSelectionView: UIView, TextViewSelection {
         context.textMatrix = .identity
         
 //        test(context)
+        context.setFillColor(UIColor.green.withAlphaComponent(0.1).cgColor)
+        context.fill(self.bounds)
+        
         self.drawColumnFrames(context)
         
         if showPinyin {
@@ -447,7 +450,7 @@ class CTSelectionView: UIView, TextViewSelection {
         
         // Inset all columns by a few pixels of margin.
         for column in 0 ..< columnCount {
-            columnRects[column] = columnRects[column].insetBy(dx: 0.0, dy: 0.0)
+            columnRects[column] = columnRects[column].insetBy(dx: 70.0, dy: 70.0)
         }
         
         // Create an array of layout paths, one for each column.
@@ -499,13 +502,15 @@ class CTSelectionView: UIView, TextViewSelection {
                     var ascent: CGFloat = 0
                     imgBounds.size.width = CGFloat(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, nil, nil))
                     imgBounds.size.height = ascent
-                    //3
-                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil)
-//                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
+                    
                     let path = CTFrameGetPath(ctframe)
                     let frameBounds = path.boundingBox
-                    imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2
-                    imgBounds.origin.y = self.bounds.height - xOffset// + origins[lineIndex].y
+                    print("frameBounds", frameBounds)
+                    let topOffset = self.bounds.maxY - frameBounds.maxY
+                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil) + topOffset
+//                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
+                    imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2 + frameBounds.origin.x
+                    imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y// + origins[lineIndex].y
                     //4
                     reusltImages += [(image: img, frame: imgBounds)]
                     //5

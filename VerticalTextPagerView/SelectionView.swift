@@ -372,8 +372,9 @@ extension SelectionView {
                         var apos = position
                         if self.textView.isVerticalLayout {
                             
+                            let topOffset = self.bounds.maxY - frameBounds.maxY
                             let positionOffset: CGFloat = font.pointSize / 2 // there is offset for right position, which is half width of a font
-                            apos = CGPoint(x: position.y + positionOffset, y: position.x)
+                            apos = CGPoint(x: position.y + positionOffset - topOffset, y: position.x)
                         }
                         // CTLineGetStringIndexForPosition only cares point.x, so it is not very reliable
                         let hitStringIndex = CTLineGetStringIndexForPosition(line, apos)
@@ -392,7 +393,6 @@ extension SelectionView {
                         var wordRect = CGRect(origin: .zero, size: rect.size)
                         wordRect.origin.x = lineBounds.origin.x + (lineBounds.size.width - rect.size.height) / 2
                         
-                        let topOffset = self.bounds.maxY - frameBounds.maxY
                         let correctOffset = offset// - topOffset
                         
                         wordRect.origin.y = frameBounds.size.height - correctOffset + frameBounds.origin.y
