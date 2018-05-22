@@ -79,8 +79,8 @@ class CTSelectionView: UIView, TextViewSelection {
         context.textMatrix = .identity
         
 //        test(context)
-        context.setFillColor(UIColor.green.withAlphaComponent(0.1).cgColor)
-        context.fill(self.bounds)
+//        context.setFillColor(UIColor.green.withAlphaComponent(0.1).cgColor)
+//        context.fill(self.bounds)
         
         self.drawColumnFrames(context)
         
@@ -111,9 +111,11 @@ class CTSelectionView: UIView, TextViewSelection {
                 let lineWidth = fontRect.height //lineRect.height
                 let lineHeight = lineRect.width
                 
+//                let topOffset: CGFloat = 0//self.bounds.maxY - frameBounds.maxY
+                
                 var vLineRect = CGRect.zero
-                vLineRect.origin.x = lineOrigin.x - lineWidth / 2
-                vLineRect.origin.y = self.bounds.height - lineOrigin.y + frameBounds.origin.y
+                vLineRect.origin.x = lineOrigin.x - lineWidth / 2 + frameBounds.origin.x
+                vLineRect.origin.y = frameBounds.height - lineOrigin.y + frameBounds.origin.y
                 vLineRect.size.width = lineWidth
                 vLineRect.size.height = frameBounds.height
                 
@@ -124,6 +126,7 @@ class CTSelectionView: UIView, TextViewSelection {
                 let stringRangeRef = CTLineGetStringRange(line)
                 let stringRange = NSRange(location: stringRangeRef.location, length: stringRangeRef.length)
                 
+                
                 var previousOffset: CGFloat = 0.0
 //                previousOffset = CTLineGetOffsetForStringIndex(line, 9, nil)
                 for index in stringRange.lowerBound ... stringRange.upperBound {
@@ -131,6 +134,7 @@ class CTSelectionView: UIView, TextViewSelection {
                     if index % 2 != 0 {
                         continue
                     }
+                    
                     
                     let offset = CTLineGetOffsetForStringIndex(line, index, nil)
                     
@@ -148,7 +152,7 @@ class CTSelectionView: UIView, TextViewSelection {
                     print("offset", offset, "wordHeight", wordHeight, "vLineRect", vLineRect)
                     var wordRect = CGRect(origin: .zero, size: fontRect.size)
                     wordRect.origin.x = vLineRect.origin.x
-                    wordRect.origin.y = self.bounds.size.height - offset + vLineRect.origin.y
+                    wordRect.origin.y = frameBounds.height - offset + vLineRect.origin.y
                     wordRect.size.height = wordHeight
                     
                     // debug, show word rect
@@ -450,7 +454,7 @@ class CTSelectionView: UIView, TextViewSelection {
         
         // Inset all columns by a few pixels of margin.
         for column in 0 ..< columnCount {
-            columnRects[column] = columnRects[column].insetBy(dx: 70.0, dy: 70.0)
+            columnRects[column] = columnRects[column].insetBy(dx: 20.0, dy: 20.0)
         }
         
         // Create an array of layout paths, one for each column.
@@ -505,7 +509,6 @@ class CTSelectionView: UIView, TextViewSelection {
                     
                     let path = CTFrameGetPath(ctframe)
                     let frameBounds = path.boundingBox
-                    print("frameBounds", frameBounds)
                     let topOffset = self.bounds.maxY - frameBounds.maxY
                     let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil) + topOffset
 //                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)

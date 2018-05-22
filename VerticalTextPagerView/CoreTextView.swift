@@ -307,12 +307,14 @@ class CoreTextView: UIView, TextViewSelection {
             let path = frameInfo.path
             let type = frameInfo.frameType
             
+            /*
             context.setStrokeColor(UIColor.red.cgColor)
             context.stroke(path!.boundingBox)
             
             context.setFillColor(UIColor.green.withAlphaComponent(0.2).cgColor)
             context.fill(self.bounds)
-            
+            */
+ 
             if type == .text || type == .textFlow {
                 var frame = frameInfo.frame
                 if (frame == nil) {

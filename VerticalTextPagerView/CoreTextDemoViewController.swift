@@ -15,10 +15,10 @@ class CoreTextDemoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let (attributedString, imageDict) = loadText() {
-            ctSelectionView.attrString = attributedString
-            ctSelectionView.imageDict = imageDict
-        }
+//        if let (attributedString, imageDict) = loadText() {
+//            ctSelectionView.attrString = attributedString
+//            ctSelectionView.imageDict = imageDict
+//        }
         
     }
 

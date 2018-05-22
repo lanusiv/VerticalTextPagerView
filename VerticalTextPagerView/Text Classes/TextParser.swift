@@ -36,9 +36,24 @@ func loadText() -> (attributedString: NSAttributedString, images: [[String : Any
             
             let parts = text[markupRange].components(separatedBy: "<")
             
-            let font = UIFont.systemFont(ofSize: 20.0)
+            let fontSize: CGFloat = 20
             
-            let attrs = [.foregroundColor: UIColor.black, .font: font, .verticalGlyphForm: NSNumber(value: true)] as [NSAttributedStringKey : Any]
+            let font = UIFont.systemFont(ofSize: fontSize)
+            
+            var attrs = [.foregroundColor: UIColor.black, .font: font, .verticalGlyphForm: NSNumber(value: true)] as [NSAttributedStringKey : Any]
+            
+            var settings = [CTParagraphStyleSetting]()
+            let factor: CGFloat = 0.5
+            var lineSpacing: CGFloat = fontSize * factor
+            settings.append(CTParagraphStyleSetting(spec: .lineSpacingAdjustment, valueSize: MemoryLayout<CGFloat>.size, value: &lineSpacing))
+            var paragraphSpacingBefore: CGFloat = fontSize * factor
+            settings.append(CTParagraphStyleSetting(spec: .paragraphSpacingBefore, valueSize: MemoryLayout<CGFloat>.size, value: &paragraphSpacingBefore))
+            var paragraphSpacing: CGFloat = fontSize * factor
+            settings.append(CTParagraphStyleSetting(spec: .paragraphSpacing, valueSize: MemoryLayout<CGFloat>.size, value: &paragraphSpacing))
+            
+            let style = CTParagraphStyleCreate(settings, settings.count)
+            attrs[.paragraphStyle] = style
+            
             let str = NSMutableAttributedString(string: parts[0], attributes: attrs)
             attributedString.append(str)
             
