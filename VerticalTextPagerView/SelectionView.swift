@@ -44,8 +44,6 @@ class SelectionView: UIView {
     
     var isDoubleTap = false
 
-    // test
-    var hitPoint: CGPoint?
     
     // MARK: - static method
     
@@ -122,12 +120,6 @@ class SelectionView: UIView {
 //            context.setStrokeColor(UIColor.red.cgColor)
 //            context.setLineWidth(3.0)
 //            context.stroke(selectionPath.boundingBox)
-        }
-        if let hitPoint = self.hitPoint {
-            let size: CGFloat = 10
-            var rect = CGRect(x: hitPoint.x - size / CGFloat(2), y: hitPoint.y - size / CGFloat(2), width: size, height: size)
-            context.setFillColor(UIColor.red.cgColor)
-            context.fill(rect)
         }
     }
     
@@ -365,9 +357,22 @@ extension SelectionView {
                     let lineBounds = getLineBounds(forLine: line, at: lineIndex, ofFrame: frame, inFrameRect: frameBounds)
                     
                     if lineBounds.contains(rightPosition) {
+                        
+                        var font: UIFont
+                        var range = NSRange(location: 0, length: self.textView.textStorage.length)
+                        if let afont = self.textView.textStorage.attribute(.font, at: 0, effectiveRange: &range) as? UIFont {
+                            print("font", afont)
+                            font = afont
+                        } else {
+                            print("no font info found")
+                            let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: 20.0)
+                            font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
+                        }
+                        
                         var apos = position
                         if self.textView.isVerticalLayout {
-                            let positionOffset: CGFloat = 10 // there is offset for right position, which is half width of a font
+                            
+                            let positionOffset: CGFloat = font.pointSize / 2 // there is offset for right position, which is half width of a font
                             apos = CGPoint(x: position.y + positionOffset, y: position.x)
                         }
                         // CTLineGetStringIndexForPosition only cares point.x, so it is not very reliable
@@ -377,27 +382,20 @@ extension SelectionView {
                         let stringRange = CFRangeMake(hitStringIndex - 1, 1)
                         printRange(selectionRange: stringRange)
                         
-                        var wordSelectionRange = NSRange(location: hitStringIndex - 1, length: 1)
+                        let wordSelectionRange = NSRange(location: hitStringIndex - 1, length: 1)
                         self.selectionWord = self.textView.textStorage.attributedSubstring(from: wordSelectionRange).string
                         
                         let offset = CTLineGetOffsetForStringIndex(line, hitStringIndex, nil)
-                        
-                        var font: UIFont
-                        if let afont = self.textView.textStorage.attribute(.font, at: hitStringIndex, effectiveRange: &wordSelectionRange) as? UIFont {
-                            print("font", afont)
-                            font = afont
-                        } else {
-                            print("no font info found")
-                            let fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: 20.0)
-                            font = UIFont(descriptor: fontDesc, size: fontDesc.pointSize)
-                        }
-                        
                         
                         let rect = CTFontGetBoundingBox(font)
                         
                         var wordRect = CGRect(origin: .zero, size: rect.size)
                         wordRect.origin.x = lineBounds.origin.x + (lineBounds.size.width - rect.size.height) / 2
-                        wordRect.origin.y = frameBounds.size.height - offset + frameBounds.origin.y
+                        
+                        let topOffset = self.bounds.maxY - frameBounds.maxY
+                        let correctOffset = offset// - topOffset
+                        
+                        wordRect.origin.y = frameBounds.size.height - correctOffset + frameBounds.origin.y
                         
                         if hitStringIndex > 0 {
                             let preOffset = CTLineGetOffsetForStringIndex(line, hitStringIndex - 1, nil)
@@ -411,7 +409,6 @@ extension SelectionView {
                         let handles = getSelectionHandles(startRect: wordRect, endRect: wordRect)
                         self.startSelectionHandlePath = handles.startHandle
                         self.endSelectionHandlePath = handles.endHandle
-                        
                         
                         self.selectionRange = wordSelectionRange
                         

@@ -307,6 +307,12 @@ class CoreTextView: UIView, TextViewSelection {
             let path = frameInfo.path
             let type = frameInfo.frameType
             
+            context.setStrokeColor(UIColor.red.cgColor)
+            context.stroke(path!.boundingBox)
+            
+            context.setFillColor(UIColor.green.withAlphaComponent(0.2).cgColor)
+            context.fill(self.bounds)
+            
             if type == .text || type == .textFlow {
                 var frame = frameInfo.frame
                 if (frame == nil) {
@@ -426,14 +432,20 @@ extension CoreTextView {
                     
                     print("imgLocation", imgLocation, "CTRunGetStringRange(run).location", CTRunGetStringRange(run).location)
                     var xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil)
-                    if !scrollView.document.showPageNumbers {
-                        xOffset += 20
-                    }
+                    // to be tuned
+//                    if !scrollView.document.showPageNumbers {
+//                        xOffset += 20
+//                    }
                     //                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
                     let path = CTFrameGetPath(ctframe)
                     let frameBounds = path.boundingBox
                     imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2 + frameBounds.origin.x
-                    imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y
+//                    imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y
+                    
+                    let topOffset = self.bounds.maxY - frameBounds.maxY
+                    let correctOffset = xOffset - topOffset
+                    
+                    imgBounds.origin.y = frameBounds.size.height - correctOffset + frameBounds.origin.y
                     
                     reusltImages += [(image: img, frame: imgBounds)]
                     

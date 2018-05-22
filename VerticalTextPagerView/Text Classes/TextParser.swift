@@ -36,7 +36,7 @@ func loadText() -> (attributedString: NSAttributedString, images: [[String : Any
             
             let parts = text[markupRange].components(separatedBy: "<")
             
-            let font = UIFont.systemFont(ofSize: 20.0)
+            let font = UIFont.systemFont(ofSize: 95.0)
             
             let attrs = [.foregroundColor: UIColor.black, .font: font, .verticalGlyphForm: NSNumber(value: true)] as [NSAttributedStringKey : Any]
             let str = NSMutableAttributedString(string: parts[0], attributes: attrs)
