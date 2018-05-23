@@ -58,7 +58,7 @@ class LYTextView: UIScrollView {
     private func initSetup() {
         fontDesc = UIFontDescriptor(name: defaultFontName, size: fontSize)
         self.isPagingEnabled = true
-//        self.showsHorizontalScrollIndicator = false
+        self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
         
         self.pageWidth = self.bounds.width
@@ -307,13 +307,7 @@ class LYCoreTextView: UIView, TextViewSelection {
     
     var frames: [CTFrame]?
     
-    var textStorage = NSMutableAttributedString(string: "") {
-        didSet {
-            if textStorage.length > 0 {
-                setNeedsDisplay()
-            }
-        }
-    }
+    var textStorage = NSMutableAttributedString(string: "")
     
     var isVerticalLayout: Bool = true
     
@@ -353,6 +347,9 @@ class LYCoreTextView: UIView, TextViewSelection {
             print("self.frame", self.frame, "self.bounds", self.bounds)
 //            selectionView.backgroundColor = UIColor.green.withAlphaComponent(0.1)
             self.selectionView = selectionView
+        }
+        if showPinyin {
+            setNeedsDisplay()
         }
     }
     
@@ -428,8 +425,6 @@ class LYCoreTextView: UIView, TextViewSelection {
                 
                 let lineWidth = fontRect.height //lineRect.height
                 let lineHeight = lineRect.width
-                
-                //                let topOffset: CGFloat = 0//self.bounds.maxY - frameBounds.maxY
                 
                 var vLineRect = CGRect.zero
                 vLineRect.origin.x = lineOrigin.x - lineWidth / 2 + frameBounds.origin.x
