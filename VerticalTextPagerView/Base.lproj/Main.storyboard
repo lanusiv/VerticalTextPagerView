@@ -34,6 +34,11 @@
                                             <segue destination="hY0-Rp-PUD" kind="show" id="YMm-de-eSZ"/>
                                         </connections>
                                     </barButtonItem>
+                                    <barButtonItem title="LYTextVIew" id="oud-b9-QA8">
+                                        <connections>
+                                            <segue destination="rp4-9u-i23" kind="show" id="rVX-53-auQ"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aRO-Ko-yv7" customClass="PagerView" customModule="VerticalTextPagerView" customModuleProvider="target">
@@ -139,7 +144,37 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WAG-lO-ZJc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1043" y="1020"/>
+            <point key="canvasLocation" x="606" y="1020"/>
+        </scene>
+        <!--Text View Controller-->
+        <scene sceneID="33K-99-euu">
+            <objects>
+                <viewController id="rp4-9u-i23" customClass="LYTextViewController" customModule="VerticalTextPagerView" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="squ-03-Vja">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CAq-32-7Kx" customClass="LYTextView" customModule="VerticalTextPagerView" customModuleProvider="target">
+                                <rect key="frame" x="20" y="64" width="374" height="652"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="CAq-32-7Kx" firstAttribute="trailing" secondItem="squ-03-Vja" secondAttribute="trailingMargin" id="9Uc-fc-XuX"/>
+                            <constraint firstItem="CAq-32-7Kx" firstAttribute="leading" secondItem="squ-03-Vja" secondAttribute="leadingMargin" id="BHg-y2-VFG"/>
+                            <constraint firstItem="CAq-32-7Kx" firstAttribute="top" secondItem="7XA-K4-K3J" secondAttribute="top" id="ZRc-eY-Pup"/>
+                            <constraint firstAttribute="bottom" secondItem="CAq-32-7Kx" secondAttribute="bottom" constant="20" symbolic="YES" id="vOn-Tf-KDG"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="7XA-K4-K3J"/>
+                    </view>
+                    <connections>
+                        <outlet property="textView" destination="CAq-32-7Kx" id="l0d-sr-S0a"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sd7-vu-5yr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1515.9420289855075" y="1019.8369565217392"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Jmd-hA-x25">

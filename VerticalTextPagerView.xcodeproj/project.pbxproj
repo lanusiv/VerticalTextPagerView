@@ -41,6 +41,8 @@
 		4EA1606B20A1493500A4E3F5 /* PagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606720A1493500A4E3F5 /* PagerView.swift */; };
 		4EA1606C20A1493500A4E3F5 /* SamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606820A1493500A4E3F5 /* SamplesViewController.swift */; };
 		4EA1606D20A1493500A4E3F5 /* AttributedStringDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1606920A1493500A4E3F5 /* AttributedStringDoc.swift */; };
+		4EBD635920B4438A008B9C6C /* LYTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBD635820B4438A008B9C6C /* LYTextView.swift */; };
+		4EBD635B20B45366008B9C6C /* LYTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBD635A20B45366008B9C6C /* LYTextViewController.swift */; };
 		4EC1051A20A1475F00AE51F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC1051920A1475F00AE51F1 /* AppDelegate.swift */; };
 		4EC1051C20A1475F00AE51F1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC1051B20A1475F00AE51F1 /* ViewController.swift */; };
 		4EC1051F20A1475F00AE51F1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4EC1051D20A1475F00AE51F1 /* Main.storyboard */; };
@@ -83,6 +85,8 @@
 		4EA1606720A1493500A4E3F5 /* PagerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagerView.swift; sourceTree = "<group>"; };
 		4EA1606820A1493500A4E3F5 /* SamplesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplesViewController.swift; sourceTree = "<group>"; };
 		4EA1606920A1493500A4E3F5 /* AttributedStringDoc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributedStringDoc.swift; sourceTree = "<group>"; };
+		4EBD635820B4438A008B9C6C /* LYTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LYTextView.swift; sourceTree = "<group>"; };
+		4EBD635A20B45366008B9C6C /* LYTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LYTextViewController.swift; sourceTree = "<group>"; };
 		4EC1051620A1475F00AE51F1 /* VerticalTextPagerView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VerticalTextPagerView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EC1051920A1475F00AE51F1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EC1051B20A1475F00AE51F1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -169,6 +173,7 @@
 				4EC1051B20A1475F00AE51F1 /* ViewController.swift */,
 				4EA1606820A1493500A4E3F5 /* SamplesViewController.swift */,
 				4E24B5BE20A15627001273E2 /* CoreTextDemoViewController.swift */,
+				4EBD635A20B45366008B9C6C /* LYTextViewController.swift */,
 				4EA1606920A1493500A4E3F5 /* AttributedStringDoc.swift */,
 				4EA1606720A1493500A4E3F5 /* PagerView.swift */,
 				4EA1606620A1493500A4E3F5 /* CoreTextView.swift */,
@@ -194,6 +199,7 @@
 		4EC1052C20A1489500AE51F1 /* Text Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4EBD635820B4438A008B9C6C /* LYTextView.swift */,
 				4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */,
 				4E82FAC320AD19E500C80EDA /* SelectionView.swift */,
 				4EA1605E20A1491800A4E3F5 /* CTView.swift */,
@@ -298,6 +304,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EBD635B20B45366008B9C6C /* LYTextViewController.swift in Sources */,
+				4EBD635920B4438A008B9C6C /* LYTextView.swift in Sources */,
 				4EA1606320A1491800A4E3F5 /* CTView.swift in Sources */,
 				4EA1606420A1491800A4E3F5 /* TextParser.swift in Sources */,
 				4E82FAC420AD19E500C80EDA /* SelectionView.swift in Sources */,

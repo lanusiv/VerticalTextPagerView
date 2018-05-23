@@ -185,8 +185,8 @@ class CTSelectionView: UIView, TextViewSelection {
                     
                     self.showGlyphs(inRect: pinyinRect, font: font, string: pinyin, context: context)
                     
-//                    let gFont = UIFont.systemFont(ofSize: 10)
-//                    drawPinyinFrames(context, pinyinString: str, font: gFont, inRect: pinyinRect)
+//                    let gFont = UIFont.systemFont(ofSize: pinyinFontSize)
+//                    drawPinyinFrames(context, pinyinString: pinyin, font: gFont, inRect: pinyinRect)
                     
                 }
 //                break
