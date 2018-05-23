@@ -11,6 +11,8 @@ import UIKit
 let defaultFontName: String = "STHeitiSC-Light"
 let defaultFontSize: CGFloat = 20.0
 
+// MARK: - VerticalTextView, supports paging
+
 class LYTextView: UIScrollView {
 
     // MARK: - Properties
@@ -35,7 +37,8 @@ class LYTextView: UIScrollView {
     var contentView: UIView
     var pageWidth: CGFloat!
     
-    var columnCount = 2
+    var columnCount = 1
+    var showPinyin = false
     
     var scrollFeedbackFromOtherControl: Bool = true
     
@@ -106,8 +109,10 @@ class LYTextView: UIScrollView {
                     framesetter, CFRangeMake(textPos, 0), path,  frameAttributes as CFDictionary)
                 
                 frames.append(frame)
+                
                 if let imageDict = self.imageDict {
-                    images = self.attachImagesWithFrame(imageDict, ctframe: frame)
+//                    images = self.attachImagesWithFrame(imageDict, ctframe: frame, imageIndex: &imageIndex)
+                    images += getImageFrames(imageDict, ctframe: frame)
                 }
                 // Start the next frame at the first character not visible in this frame.
                 let frameRange: CFRange = CTFrameGetVisibleStringRange(frame)
@@ -121,6 +126,7 @@ class LYTextView: UIScrollView {
             pageView = LYCoreTextView(frame: pageFrame, ctframes: frames, pageNumber: Int(pageIndex), images: images)
             contentView.addSubview(pageView)
             pageView.name = "page # \(pageIndex)"
+            pageView.showPinyin = self.showPinyin
             
             pageIndex += 1
         }
@@ -208,67 +214,62 @@ class LYTextView: UIScrollView {
         return array
     }
     
-    func attachImagesWithFrame(_ imagesDict: [[String: Any]],
-                               ctframe: CTFrame) -> [(image: UIImage, frame: CGRect)] {
-        //1
-        let lines = CTFrameGetLines(ctframe) as NSArray
-        //2
-        var origins = [CGPoint](repeating: .zero, count: lines.count)
-        CTFrameGetLineOrigins(ctframe, CFRangeMake(0, 0), &origins)
+    
+    func getImageFrames(_ imagesDict: [[String: Any]],
+                        ctframe: CTFrame) -> [(image: UIImage, frame: CGRect)] {
         
+        var resultImages: [(image: UIImage, frame: CGRect)] = []
         
-        var reusltImages: [(image: UIImage, frame: CGRect)] = []
-        var imageIndex = 0
-        if imagesDict.count <= 0 {
-            return reusltImages
-        }
-        //3
-        var nextImage = imagesDict[imageIndex]
-        guard var imgLocation = nextImage["location"] as? Int else {
-            return reusltImages
-        }
-        //4
-        for lineIndex in 0..<lines.count {
-            let line = lines[lineIndex] as! CTLine
-            //5
-            if let glyphRuns = CTLineGetGlyphRuns(line) as? [CTRun],
-                let imageFilename = nextImage["filename"] as? String,
-                let img = UIImage(named: imageFilename)  {
-                for run in glyphRuns {
-                    // 1
-                    let runRange = CTRunGetStringRange(run)
-                    if runRange.location > imgLocation || runRange.location + runRange.length <= imgLocation {
-                        continue
-                    }
-                    //2
-                    var imgBounds: CGRect = .zero
-                    var ascent: CGFloat = 0
-                    imgBounds.size.width = CGFloat(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, nil, nil))
-                    imgBounds.size.height = ascent
-                    
-                    let path = CTFrameGetPath(ctframe)
-                    let frameBounds = path.boundingBox
-                    let topOffset = self.bounds.maxY - frameBounds.maxY
-                    let xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location + 1, nil) + topOffset
-                    //                    print("xOffset", xOffset, "origins[lineIndex].y", origins[lineIndex].y)
-                    imgBounds.origin.x = origins[lineIndex].x - imgBounds.width / 2 + frameBounds.origin.x
-                    imgBounds.origin.y = self.bounds.height - xOffset// + frameBounds.origin.y// + origins[lineIndex].y
-                    //4
-                    reusltImages += [(image: img, frame: imgBounds)]
-                    //5
-                    imageIndex += 1
-                    if imageIndex < imagesDict.count {
-                        nextImage = imagesDict[imageIndex]
-                        imgLocation = (nextImage["location"] as AnyObject).intValue
-                    }
+        for dict in imagesDict {
+            if let imageLocation = dict["location"] as? Int,
+                let imageName = dict["filename"] as? String,
+                let width = dict["width"] as? CGFloat,
+                let height = dict["height"] as? CGFloat {
+                
+                let frameRange = CTFrameGetVisibleStringRange(ctframe)
+                // if imagelocation is not within this ctframe, break
+                if imageLocation < frameRange.location || imageLocation > frameRange.location + frameRange.length {
+                    continue
+                }
+                
+                let imageFrame = getFrameRect(ctframe, imageLocation, CGSize(width: width, height: height))
+                if let image = UIImage(named: imageName) {
+                    resultImages.append((image: image, frame: imageFrame))
                 }
             }
         }
-        return reusltImages
+        
+        return resultImages
     }
+    
+    private func getFrameRect(_ frame: CTFrame, _ location: Int, _ imageSize: CGSize) -> CGRect {
+        var rect = CGRect(origin: .zero, size: imageSize)
+        let lines = CTFrameGetLines(frame) as! [CTLine]
+        let lineCount = lines.count
+        let frameBounds = CTFrameGetPath(frame).boundingBox
+        
+        for lineIndex in 0 ..< lineCount {
+            let line = lines[lineIndex]
+            let lineRange = CTLineGetStringRange(line)
+            if location >= lineRange.location && location <= lineRange.location + lineRange.length {
+                var lineOrigin = CGPoint.zero
+                CTFrameGetLineOrigins(frame, CFRangeMake(lineIndex, 1), &lineOrigin)
+                let offset = CTLineGetOffsetForStringIndex(line, location + 1, nil)
+                
+                rect.origin.x = lineOrigin.x - imageSize.width / 2 + frameBounds.origin.x
+                let lineOriginY = frameBounds.height - lineOrigin.y + frameBounds.origin.y
+                rect.origin.y = frameBounds.height - offset + lineOriginY
+            }
+        }
+        
+        return rect
+    }
+    
     
 }
 
+
+// MARK: - extended to confirm to UIScrollViewDelegate to implement page selection
 
 extension LYTextView: UIScrollViewDelegate {
     
@@ -301,7 +302,25 @@ extension LYTextView: UIScrollViewDelegate {
     }
 }
 
+/*
+// MARK: - parsing and store text, providing ctframes and images to draw
 
+class LYTextStorage {
+    private let textStorage = NSMutableAttributedString(string: "")
+    private var stringAttributes: [NSAttributedStringKey : Any] = [:]
+    
+    var framesetter: CTFramesetter!
+    // text in
+    var attrString: NSAttributedString?
+    
+    
+    var imageDict: [[String : Any]]?
+    
+    
+}
+ */
+
+// MARK: - CoreTextView drawing class, supports text selection, show pinyin
 
 class LYCoreTextView: UIView, TextViewSelection {
     
@@ -323,7 +342,7 @@ class LYCoreTextView: UIView, TextViewSelection {
     let fontSize: CGFloat = defaultFontSize
     var fontDesc: UIFontDescriptor!
     
-    let showPinyin = true
+    var showPinyin = false
     
     // MARK: - Initializers
     required init(coder aDecoder: NSCoder) {
