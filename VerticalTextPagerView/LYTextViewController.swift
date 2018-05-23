@@ -16,9 +16,9 @@ class LYTextViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let (attrString, _) = loadText() {
+        if let (attrString, imageDict) = loadText() {
             textView.attrString = attrString
-            
+            textView.imageDict = imageDict
         }
         
     }
