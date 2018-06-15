@@ -211,6 +211,11 @@ extension SelectionView {
             aRect.origin.y = self.bounds.height - rect.origin.y
             aRect.origin.y -= aRect.size.height / 2
             aRect.size.height *= 1.5
+            if textView.isVerticalLayout {
+                
+                
+            }
+            
             menu.setTargetRect(aRect, in: self)
             menu.setMenuVisible(true, animated: true)
         }
@@ -343,6 +348,8 @@ extension SelectionView {
     func getHitPointRect(at position: CGPoint?) -> CGRect? {
         guard let frames = self.textView.frames, let position = position else { return nil }
         
+        print("getHitPointRect position: ", position)
+        // ULO to LLO
         let rightPosition = CGPoint(x: position.x, y: self.bounds.size.height - position.y)
         
         for frame in frames {
@@ -357,7 +364,7 @@ extension SelectionView {
                     let lineBounds = getLineBounds(forLine: line, at: lineIndex, ofFrame: frame, inFrameRect: frameBounds)
                     
                     if lineBounds.contains(rightPosition) {
-                        
+                        print("getHitPointRect lineBounds", lineBounds)
                         var font: UIFont
                         var range = NSRange(location: 0, length: self.textView.textStorage.length)
                         if let afont = self.textView.textStorage.attribute(.font, at: 0, effectiveRange: &range) as? UIFont {
@@ -375,6 +382,10 @@ extension SelectionView {
                             let topOffset = self.bounds.maxY - frameBounds.maxY
                             let positionOffset: CGFloat = font.pointSize / 2 // there is offset for right position, which is half width of a font
                             apos = CGPoint(x: position.y + positionOffset - topOffset, y: position.x)
+                        } else {
+                            let leftOffset: CGFloat = frameBounds.minX
+                            let positionOffset: CGFloat = font.pointSize / 2 // there is offset for right position, which is half width of a font
+                            apos = CGPoint(x: position.x + positionOffset - leftOffset, y: position.y)
                         }
                         // CTLineGetStringIndexForPosition only cares point.x, so it is not very reliable
                         let hitStringIndex = CTLineGetStringIndexForPosition(line, apos)
@@ -397,12 +408,26 @@ extension SelectionView {
                         
                         wordRect.origin.y = frameBounds.size.height - correctOffset + frameBounds.origin.y
                         
+                        if !textView.isVerticalLayout {
+                            let leftOffset = frameBounds.minX
+                            let positionOffset: CGFloat = font.pointSize / 2
+                            wordRect.origin.x = correctOffset//lineBounds.origin.x + correctOffset - positionOffset - leftOffset
+                            wordRect.origin.y = lineBounds.origin.y// - abs(lineBounds.height - rect.height) / 2
+                        }
+                        
                         if hitStringIndex > 0 {
                             let preOffset = CTLineGetOffsetForStringIndex(line, hitStringIndex - 1, nil)
                             let wordheight = offset - preOffset
                             wordRect.size.height = wordheight
                         }
                         wordRect.size.width = rect.height
+                        
+                        if !textView.isVerticalLayout {
+                            let preOffset = CTLineGetOffsetForStringIndex(line, hitStringIndex - 1, nil)
+                            let wordWidth = offset - preOffset
+                            wordRect.size.width = wordWidth // to be tuned
+                            wordRect.size.height = rect.height
+                        }
                         
                         self.selectionWordRect = wordRect
                         
@@ -411,7 +436,7 @@ extension SelectionView {
                         self.endSelectionHandlePath = handles.endHandle
                         
                         self.selectionRange = wordSelectionRange
-                        
+                        print("getHitPointRect wordRect: ", wordRect)
                         return wordRect
                     }
                 }
@@ -451,8 +476,8 @@ extension SelectionView {
             selectionBounds.size.height = rect.size.width
         } else {
             selectionBounds.origin.x = (frameBounds.origin.x + lineOrigin.x + rect.origin.x)
-            let y = frameBounds.size.height - lineOrigin.y + frameBounds.origin.y - (rect.height)
-            selectionBounds.origin.y = y
+            
+            selectionBounds.origin.y = lineOrigin.y + frameBounds.origin.y// + (rect.height)
             selectionBounds.size = rect.size
         }
         
@@ -479,11 +504,20 @@ extension SelectionView {
         selectionBounds.size.width = rect.size.height
         selectionBounds.size.height = lineEndOffset - lineStartOffset
         
+        if !textView.isVerticalLayout {
+            selectionBounds.origin.x = frameBounds.origin.x + lineOrigin.x + lineStartOffset // only lineStartOffset?
+            selectionBounds.origin.y = lineOrigin.y + frameBounds.origin.y// + rect.height
+            
+            selectionBounds.size.width = lineEndOffset - lineStartOffset
+            selectionBounds.size.height = rect.size.height * 1.0
+            
+        }
+        
         return selectionBounds
     }
     
     func getSelectionHandles(startRect: CGRect, endRect: CGRect) -> (startHandle: UIBezierPath, endHandle: UIBezierPath) {
-        let startHandlePath = UIBezierPath()
+        var startHandlePath = UIBezierPath()
         
         let handleRadius: CGFloat = 4
         var startHandleRect = CGRect.zero
@@ -500,7 +534,7 @@ extension SelectionView {
         
         startHandlePath.lineWidth = 2.0
         
-        let endHandlePath = UIBezierPath()
+        var endHandlePath = UIBezierPath()
         
         endHandleRect.origin.x = endRect.minX - handleRadius * 2
         endHandleRect.origin.y = endRect.minY - handleRadius
@@ -512,6 +546,28 @@ extension SelectionView {
         
         endHandlePath.lineWidth = 2.0
         
+        if !textView.isVerticalLayout {
+            startHandlePath = UIBezierPath()
+            
+            startHandleRect.origin.x = startRect.minX - handleRadius
+            startHandleRect.origin.y = startRect.maxY
+            startHandleRect.size.width = handleRadius * 2.0
+            startHandleRect.size.height = handleRadius * 2.0
+            startHandlePath.addArc(withCenter: CGPoint(x: startHandleRect.midX, y: startHandleRect.midY), radius: 4.5, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+            
+            startHandlePath.move(to: CGPoint(x: startRect.minX, y: startRect.maxY))
+            startHandlePath.addLine(to: CGPoint(x: startRect.minX, y: startRect.minY))
+            
+            endHandlePath = UIBezierPath()
+            
+            endHandleRect.origin.x = endRect.maxX - handleRadius
+            endHandleRect.origin.y = endRect.minY - handleRadius * 2.0
+            endHandleRect.size.width = handleRadius * 2.0
+            endHandleRect.size.height = handleRadius * 2.0
+            endHandlePath.addArc(withCenter: CGPoint(x: endHandleRect.midX, y: endHandleRect.midY), radius: 4.5, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+            endHandlePath.move(to: CGPoint(x: endRect.maxX, y: endRect.minY))
+            endHandlePath.addLine(to: CGPoint(x: endRect.maxX, y: endRect.maxY))
+        }
         return (startHandlePath, endHandlePath)
     }
     
@@ -571,7 +627,7 @@ extension SelectionView {
                     //                    print("startLineIndex", startStringIndex, "endLineIndex", endStringIndex)
                     
                     let selectionRange = NSRange(location: startStringIndex - 1, length: endStringIndex - startStringIndex)
-                    //                    printRange(selectionRange: CFRangeMake(startStringIndex - 1, endStringIndex - startStringIndex))
+                                        printRange(selectionRange: CFRangeMake(startStringIndex - 1, endStringIndex - startStringIndex))
                     
                     self.selectionRange = selectionRange
                     
@@ -668,19 +724,34 @@ extension SelectionView {
         
         var stringIndex: Int = -1
         
-        // find the line that contains point2
-        if lineBounds.contains(point) {
-            var rightPosition: CGPoint = point
-            // if vertical layout, should transpose point in order to get the right hit string index
-            if self.textView.isVerticalLayout {
-                rightPosition = CGPoint(x: point.y, y: point.x)
+        if textView.isVerticalLayout {
+            // find the line that contains point2
+            if lineBounds.contains(point) {
+                var rightPosition: CGPoint = point
+                // if vertical layout, should transpose point in order to get the right hit string index
+                if self.textView.isVerticalLayout {
+                    rightPosition = CGPoint(x: point.y, y: point.x)
+                }
+                stringIndex = CTLineGetStringIndexForPosition(line, rightPosition)
+                //            let stringRange = CTLineGetStringRange(line)
+                //            print("stringRange", stringRange)
+                
+                return SelectionInfo(line: line, lineIndex: lineIndex, stringIndex: stringIndex)
             }
-            stringIndex = CTLineGetStringIndexForPosition(line, rightPosition)
-            //            let stringRange = CTLineGetStringRange(line)
-            //            print("stringRange", stringRange)
-            
-            return SelectionInfo(line: line, lineIndex: lineIndex, stringIndex: stringIndex)
+        } else {
+            // find the line that contains point2
+            let point = CGPoint(x: point.x, y: self.bounds.height - point.y)
+            if lineBounds.contains(point) {
+                var rightPosition: CGPoint = point
+                // if vertical layout, should transpose point in order to get the right hit string index
+                stringIndex = CTLineGetStringIndexForPosition(line, rightPosition)
+                //            let stringRange = CTLineGetStringRange(line)
+                //            print("stringRange", stringRange)
+                
+                return SelectionInfo(line: line, lineIndex: lineIndex, stringIndex: stringIndex)
+            }
         }
+        
         
         return nil
     }

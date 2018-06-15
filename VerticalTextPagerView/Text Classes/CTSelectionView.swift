@@ -24,14 +24,17 @@ class CTSelectionView: UIView, TextViewSelection {
     
     var images: [(image: UIImage, frame: CGRect)] = []
     
-    let isVerticalLayout = true
+    let isVerticalLayout = false
     
     let columnCount = 1
     
-    let fontSize: CGFloat = 20.0
+    let fontSize: CGFloat = 30.0
     var fontDesc: UIFontDescriptor!
     
     let showPinyin = false
+    
+    let columnInsetX: CGFloat = 20
+    let columnInsetY: CGFloat = 20
     
     // MARK: - initializers
     
@@ -64,7 +67,7 @@ class CTSelectionView: UIView, TextViewSelection {
         let style = CTParagraphStyleCreate(settings, settings.count)
         stringAttributes[.paragraphStyle] = style
         
-//        let kern: CGFloat = 73.0
+//        let kern: CGFloat = 33.0
 //        stringAttributes[.kern] = kern
         
     }
@@ -375,12 +378,13 @@ class CTSelectionView: UIView, TextViewSelection {
             let attributedString = NSMutableAttributedString(string: string, attributes: stringAttributes)
             self.textStorage.setAttributedString(attributedString)
         } else {
-            let attributedString = NSMutableAttributedString(string: string)
+            let attributedString = NSMutableAttributedString(string: string, attributes: stringAttributes)
             self.textStorage.setAttributedString(attributedString)
         }
         if let attrString = self.attrString {
-            
-            self.textStorage.setAttributedString(attrString)
+            let attributedString = NSMutableAttributedString(string: "", attributes: stringAttributes)
+            attributedString.setAttributedString(attrString)
+            self.textStorage.setAttributedString(attributedString)
         }
         /*
         if let selectionRange = self.selectionRange {
@@ -454,7 +458,7 @@ class CTSelectionView: UIView, TextViewSelection {
         
         // Inset all columns by a few pixels of margin.
         for column in 0 ..< columnCount {
-            columnRects[column] = columnRects[column].insetBy(dx: 20.0, dy: 20.0)
+            columnRects[column] = columnRects[column].insetBy(dx: columnInsetX, dy: columnInsetY)
         }
         
         // Create an array of layout paths, one for each column.

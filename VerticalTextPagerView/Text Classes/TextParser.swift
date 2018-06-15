@@ -13,7 +13,10 @@ func loadText() -> (attributedString: NSAttributedString, images: [[String : Any
     guard let file = Bundle.main.path(forResource: "demo", ofType: "txt") else { return nil }
     
     do {
-        let text = try String(contentsOfFile: file, encoding: .utf8)
+//        let text = try String(contentsOfFile: file, encoding: .utf8)
+        let text = "<image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif><image: 004.gif>"
+        
+//        let text = "好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。好雨知時節，當春奈發生。隨風潛入夜，潤物細無聲。"
         
         var images: [[String : Any]] = []
         
@@ -104,7 +107,7 @@ func loadText() -> (attributedString: NSAttributedString, images: [[String : Any
             let delegate = CTRunDelegateCreate(&callbacks, extentBuffer)
             //5
             let attrDictionaryDelegate = [(kCTRunDelegateAttributeName as NSAttributedStringKey): (delegate as Any)]
-            attributedString.append(NSAttributedString(string: " ", attributes: attrDictionaryDelegate))
+            attributedString.append(NSAttributedString(string: "好", attributes: attrDictionaryDelegate))
             
         }
         
