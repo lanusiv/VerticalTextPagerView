@@ -411,7 +411,8 @@ extension SelectionView {
                         if !textView.isVerticalLayout {
                             let leftOffset = frameBounds.minX
                             let positionOffset: CGFloat = font.pointSize / 2
-                            wordRect.origin.x = correctOffset//lineBounds.origin.x + correctOffset - positionOffset - leftOffset
+                            let preOffset = CTLineGetOffsetForStringIndex(line, hitStringIndex - 1, nil)
+                            wordRect.origin.x = lineBounds.origin.x + preOffset//lineBounds.origin.x + correctOffset - positionOffset - leftOffset
                             wordRect.origin.y = lineBounds.origin.y// - abs(lineBounds.height - rect.height) / 2
                         }
                         
@@ -475,7 +476,7 @@ extension SelectionView {
             selectionBounds.size.width = rect.size.height
             selectionBounds.size.height = rect.size.width
         } else {
-            selectionBounds.origin.x = (frameBounds.origin.x + lineOrigin.x + rect.origin.x)
+            selectionBounds.origin.x = lineOrigin.x + frameBounds.origin.x
             
             selectionBounds.origin.y = lineOrigin.y + frameBounds.origin.y// + (rect.height)
             selectionBounds.size = rect.size

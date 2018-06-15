@@ -28,13 +28,13 @@ class CTSelectionView: UIView, TextViewSelection {
     
     let columnCount = 1
     
-    let fontSize: CGFloat = 30.0
+    let fontSize: CGFloat = 20.0
     var fontDesc: UIFontDescriptor!
     
     let showPinyin = false
     
-    let columnInsetX: CGFloat = 20
-    let columnInsetY: CGFloat = 20
+    let columnInsetX: CGFloat = 10
+    let columnInsetY: CGFloat = 10
     
     // MARK: - initializers
     
