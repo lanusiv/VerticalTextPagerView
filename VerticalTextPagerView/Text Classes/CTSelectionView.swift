@@ -28,7 +28,7 @@ class CTSelectionView: UIView, TextViewSelection {
     
     let columnCount = 1
     
-    let fontSize: CGFloat = 20.0
+    let fontSize: CGFloat = 30.0
     var fontDesc: UIFontDescriptor!
     
     let showPinyin = false
@@ -56,7 +56,7 @@ class CTSelectionView: UIView, TextViewSelection {
         fontDesc = UIFontDescriptor(name: "STHeitiSC-Light", size: fontSize)
         
         var settings = [CTParagraphStyleSetting]()
-        let factor: CGFloat = 0.1
+        let factor: CGFloat = 0.1 * 5
         var lineSpacing: CGFloat = fontSize * factor
         settings.append(CTParagraphStyleSetting(spec: .lineSpacingAdjustment, valueSize: MemoryLayout<CGFloat>.size, value: &lineSpacing))
         var paragraphSpacingBefore: CGFloat = fontSize * factor
