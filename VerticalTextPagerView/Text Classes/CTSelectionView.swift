@@ -403,7 +403,6 @@ class CTSelectionView: UIView, TextViewSelection {
             frameAttributes = nil
         }
         
-        
         let columnPaths = self.createColumns(withColumnCount: columnCount)
         
         //        let pathCount: CFIndex = CFArrayGetCount(columnPaths)

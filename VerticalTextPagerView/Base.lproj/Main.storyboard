@@ -39,6 +39,11 @@
                                             <segue destination="rp4-9u-i23" kind="show" id="rVX-53-auQ"/>
                                         </connections>
                                     </barButtonItem>
+                                    <barButtonItem title="Frame Size" id="uvo-7B-YyI">
+                                        <connections>
+                                            <segue destination="5ML-fd-uyg" kind="show" id="cHC-fc-9wg"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aRO-Ko-yv7" customClass="PagerView" customModule="VerticalTextPagerView" customModuleProvider="target">
@@ -175,6 +180,33 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sd7-vu-5yr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1515.9420289855075" y="1019.8369565217392"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="VOt-Dm-LLe">
+            <objects>
+                <viewController id="5ML-fd-uyg" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vCK-yY-y4p">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Rk-1G-ziX" customClass="LYLabel" customModule="VerticalTextPagerView" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="64" width="414" height="672"/>
+                                <color key="backgroundColor" red="0.62197488921437993" green="1" blue="0.86755202367347639" alpha="0.20400791952054795" colorSpace="custom" customColorSpace="displayP3"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="0Rk-1G-ziX" firstAttribute="top" secondItem="hUZ-dy-qpO" secondAttribute="top" id="3Lw-fA-q36"/>
+                            <constraint firstItem="0Rk-1G-ziX" firstAttribute="leading" secondItem="hUZ-dy-qpO" secondAttribute="leading" id="4o4-wL-lOc"/>
+                            <constraint firstItem="hUZ-dy-qpO" firstAttribute="trailing" secondItem="0Rk-1G-ziX" secondAttribute="trailing" id="K7C-F8-eHE"/>
+                            <constraint firstItem="hUZ-dy-qpO" firstAttribute="bottom" secondItem="0Rk-1G-ziX" secondAttribute="bottom" id="nDq-32-m9u"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="hUZ-dy-qpO"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="W8d-bp-bGA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2286" y="1020"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Jmd-hA-x25">
