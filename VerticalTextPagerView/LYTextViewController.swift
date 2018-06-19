@@ -17,6 +17,7 @@ class LYTextViewController: UIViewController {
         super.viewDidLoad()
 
         if let (attrString, imageDict) = loadText() {
+//            textView.isVerticalLayout = false
             textView.imageDict = imageDict
             textView.attrString = attrString
         }

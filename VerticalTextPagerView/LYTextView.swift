@@ -11,6 +11,15 @@ import UIKit
 let defaultFontName: String = "STHeitiSC-Light"
 let defaultFontSize: CGFloat = 20.0
 
+
+struct PageText {
+    var pageFrame: CGRect
+    var ctframes: [CTFrame]
+    var pageNumber: Int
+    var images: [(image: UIImage, frame: CGRect)]
+    var showPinyin: Bool
+}
+
 // MARK: - VerticalTextView, supports paging
 
 class LYTextView: UIScrollView {
@@ -20,6 +29,10 @@ class LYTextView: UIScrollView {
     // MARK:  page properties
     var pageDisplayed: Int = 0
     var pageCount: Int = 0
+    
+    var pages: [PageText] = []
+    
+    var pageViews: [LYCoreTextView?] = []
     
     // MARK: coretext properties
     let textStorage = NSMutableAttributedString(string: "")
@@ -86,8 +99,7 @@ class LYTextView: UIScrollView {
         let framesetter = CTFramesetterCreateWithAttributedString(attrString as CFAttributedString)
         
         
-        // init ctframes and page views
-        var pageView: LYCoreTextView
+        // init ctframes and pages
         var textPos = 0
         var pageIndex: CGFloat = 0
         
@@ -123,15 +135,19 @@ class LYTextView: UIScrollView {
             let offsetX = isVerticalLayout ? -pageIndex * pageWidth : pageIndex * pageWidth
             let pageFrame = self.bounds.offsetBy(dx: offsetX, dy: 0)
             
-            pageView = LYCoreTextView(frame: pageFrame, ctframes: frames, pageNumber: Int(pageIndex), images: images)
-            contentView.addSubview(pageView)
-            pageView.name = "page # \(pageIndex)"
-            pageView.showPinyin = self.showPinyin
+//            pageView = LYCoreTextView(frame: pageFrame, ctframes: frames, pageNumber: Int(pageIndex), images: images)
+//            contentView.addSubview(pageView)
+//            pageView.name = "page # \(pageIndex)"
+//            pageView.showPinyin = self.showPinyin
+            let page = PageText(pageFrame: pageFrame, ctframes: frames, pageNumber: Int(pageIndex), images: images, showPinyin: self.showPinyin)
+            pages.append(page)
             
             pageIndex += 1
         }
         
         self.pageCount = Int(pageIndex)
+        
+        print("loadText, pageCount", pageCount)
         
         contentSize = CGSize(width: pageIndex * pageWidth,
                              height: self.bounds.height)
@@ -141,8 +157,13 @@ class LYTextView: UIScrollView {
         if isVerticalLayout {
             let translationX = CGFloat(pageIndex - 1) * pageWidth
             // make negative origin.x positive
-            for view in contentView.subviews {
-                view.frame.origin.x += translationX
+//            for view in contentView.subviews {
+//                view.frame.origin.x += translationX
+//            }
+            var index = 0
+            for _ in 0 ..< pages.count {
+                pages[index].pageFrame.origin.x += translationX
+                index += 1
             }
             print("loadPage, translationX", translationX)
 //            contentView.transform = CGAffineTransform(translationX: translationX, y: 0.0)
@@ -153,9 +174,53 @@ class LYTextView: UIScrollView {
         
         self.scrollFeedbackFromOtherControl = true
         
+        pageViews = [LYCoreTextView?](repeating: nil, count: pageCount)
+        
+        loadPage(0)
+        loadPage(1)
+        
         self.pageDisplayed = 0
         if let page = contentView.subviews[pageDisplayed] as? LYCoreTextView {
             self.pageSelected(page)
+        }
+    }
+    
+    fileprivate func removeAnyPages() {
+        for page in pageViews where page != nil {
+            page?.removeFromSuperview()
+        }
+    }
+    
+    fileprivate func loadCurrentPages(page: Int) {
+        // Load the visible page and the page on either side of it (to avoid flashes when the user starts scrolling).
+        
+        // Don't load if we are at the beginning or end of the list of pages.
+        guard (page > 0 && page + 1 < pageCount) /*|| transitioning*/ else { return }
+        
+        // Remove all of the images and start over.
+        removeAnyPages()
+        pageViews = [LYCoreTextView?](repeating: nil, count: pageCount)
+        
+        //        let page = page % actualNumPages
+        // Load the appropriate new pages for scrolling.
+        loadPage(Int(page) - 1)
+        loadPage(Int(page))
+        loadPage(Int(page) + 1)
+    }
+    
+    private func loadPage(_ page: Int) {
+        guard page < pageCount, pageCount > 0 else { return  }
+        
+        if pageViews[page] == nil {
+            let pageText = pages[page]
+            let pageView = LYCoreTextView(frame: pageText.pageFrame, ctframes: pageText.ctframes, pageNumber: pageText.pageNumber, images: pageText.images)
+            pageView.showPinyin = pageText.showPinyin
+            pageView.name = "page # \(pageText.pageNumber)"
+            pageView.pageCount = pageCount
+            contentView.addSubview(pageView)
+            pageViews[page] = pageView
+            
+//            print("loadPage loading page finished, page: ", page)
         }
     }
     
@@ -169,7 +234,11 @@ class LYTextView: UIScrollView {
             return
         }
         self.pageDisplayed = pageToDisplay
-        if let page = contentView.subviews[pageToDisplay] as? LYCoreTextView {
+        
+        loadCurrentPages(page: pageToDisplay)
+        
+//        if let page = contentView.subviews[pageToDisplay] as? LYCoreTextView
+        if let page = pageViews[pageToDisplay] {
             self.pageSelected(page)
         }
     }
@@ -337,6 +406,8 @@ class LYCoreTextView: UIView, TextViewSelection {
     
     var pageNumber: Int = 0
     
+    var pageCount: Int = 0
+    
     var images: [(image: UIImage, frame: CGRect)] = []
     
     let fontSize: CGFloat = defaultFontSize
@@ -415,7 +486,8 @@ class LYCoreTextView: UIView, TextViewSelection {
     fileprivate func drawPageNumber(_ context: CGContext) {
         // draw page number
         let font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize)
-        let footageText = String(describing: pageNumber + 1)
+        let footageText = pageCount > 0 ? "\(pageNumber + 1)/\(pageCount)" : "\(pageNumber + 1)"
+//        let footageText = String(describing: pageNumber + 1)
         let attrString = NSAttributedString(string: footageText, attributes: [.font : font])
         
         let footageLine = CTLineCreateWithAttributedString(attrString)
