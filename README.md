@@ -6,3 +6,6 @@ iOS vertical text layout demo, by customizing CoreText
 ### 2. 自定义漢字竖排控件，分页功能
 ### 3. 文本选择功能，双击查看漢字拼音
 ### 4. 分享pdf
+
+
+![image](https://github.com/lanusiv/VerticalTextPagerView/Demos/demo1.gif)
