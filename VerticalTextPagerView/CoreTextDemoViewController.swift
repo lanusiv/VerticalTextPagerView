@@ -20,11 +20,34 @@ class CoreTextDemoViewController: UIViewController {
 //            ctSelectionView.imageDict = imageDict
 //        }
         
+        let share = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(displayShareSheet))
+        navigationItem.rightBarButtonItem = share
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @objc private func displayShareSheet() {
+        
+        let pdf = ctSelectionView.createAPDF()
+//        guard let image = ctSelectionView.createImage() else {
+//            return
+//        }
+        //        let title = "I wanna share you an awsome app!"
+        //        let url = URL(string: "http://www.mtime.com/")
+        let vc = UIActivityViewController(activityItems: [pdf], applicationActivities: [])
+        present(vc, animated: true)
+        vc.completionWithItemsHandler = { activity, success, items, error in
+            print("activity", activity, "success", success, "items", items, "error", error)
+            if !success {
+                print("cancelled")
+                return
+            }
+            
+            if activity == UIActivityType.mail {
+                print("mail")
+            }
+            else if activity == UIActivityType.message {
+                print("message")
+            }
+        }
     }
     
 

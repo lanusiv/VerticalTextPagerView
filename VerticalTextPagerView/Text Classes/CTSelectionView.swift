@@ -24,7 +24,7 @@ class CTSelectionView: UIView, TextViewSelection {
     
     var images: [(image: UIImage, frame: CGRect)] = []
     
-    let isVerticalLayout = false
+    let isVerticalLayout = true
     
     let columnCount = 1
     
@@ -542,5 +542,137 @@ class CTSelectionView: UIView, TextViewSelection {
 //                print("imgBounds", imgBounds)
             }
         }
+    }
+}
+
+extension CTSelectionView {
+    
+    func createImage() -> UIImage? {
+        let string = chineseString
+        let font = CTFontCreateUIFontForLanguage(.system, fontDesc.pointSize, nil)
+        self.stringAttributes[.font] = font
+        if isVerticalLayout {
+            self.stringAttributes[.verticalGlyphForm] = NSNumber(value: true)
+            let attributedString = NSMutableAttributedString(string: string, attributes: stringAttributes)
+            self.textStorage.setAttributedString(attributedString)
+        } else {
+            let attributedString = NSMutableAttributedString(string: string, attributes: stringAttributes)
+            self.textStorage.setAttributedString(attributedString)
+        }
+        if let attrString = self.attrString {
+            let attributedString = NSMutableAttributedString(string: "", attributes: stringAttributes)
+            attributedString.setAttributedString(attrString)
+            self.textStorage.setAttributedString(attributedString)
+        }
+        
+        // Create the framesetter with the attributed string.
+        let framesetter = CTFramesetterCreateWithAttributedString(self.textStorage)
+        var frameAttributes: CFDictionary?
+        if isVerticalLayout {
+            frameAttributes = [kCTFrameProgressionAttributeName as NSAttributedStringKey: NSNumber(value: CTFrameProgression.rightToLeft.rawValue)] as CFDictionary
+        } else {
+            frameAttributes = nil
+        }
+        
+        let testSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: 792)
+        var size = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, 0), frameAttributes, testSize, nil)
+//        size.height = 648
+        let frameRect = CGRect(origin: CGPoint(x: 72, y: 72), size: size)
+        let framePath = CGMutablePath()
+        framePath.addRect(frameRect)
+        let frame = CTFramesetterCreateFrame(
+            framesetter, CFRangeMake(0, 0), framePath, frameAttributes)
+        
+        let scale = UIScreen.main.scale
+        let width = size.width + 72 * 2
+        
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: 792), false, scale)
+        guard let context = UIGraphicsGetCurrentContext() else {
+            return nil
+        }
+        context.translateBy(x: 0.0, y: 792)
+        context.scaleBy(x: 1.0, y: -1.0)
+        context.textMatrix = .identity
+        drawText(context, frame)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        return image
+    }
+    
+    func drawText(_ context: CGContext, _ frame: CTFrame) {
+        CTFrameDraw(frame, context)
+        if let imageDict = self.imageDict {
+            self.images = self.attachImagesWithFrame(imageDict, ctframe: frame)
+            self.drawImages(context)
+        }
+    }
+    
+    func drawPageNum(_ page: Int) {
+        let pageString = String(describing: page)
+        let font = UIFont.systemFont(ofSize: 14)
+        let maxSize = CGSize(width: 612, height: 72)
+        let attrString = NSAttributedString(string: pageString, attributes: [.font: font])
+        
+        let testPageStringRect = attrString.boundingRect(with: maxSize, options: .usesLineFragmentOrigin, context: nil)
+        let pageStringRect = CGRect(x: ((612.0 - testPageStringRect.width) / 2.0), y: 720.0 + ((72.0 - testPageStringRect.height) / 2.0), width: testPageStringRect.width, height: testPageStringRect.height)
+        attrString.draw(in: pageStringRect)
+    }
+    
+//    - (IBAction)createPDF:(id)sender {
+    func createAPDF() -> NSData {
+        let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+        let documentPath = dirPath[0] + "/ctext.pdf"// ddd
+        let pdfData = NSMutableData()
+        
+        let currentText = textStorage
+        let framesetter = CTFramesetterCreateWithAttributedString(currentText)
+        
+//        UIGraphicsBeginPDFContextToFile(documentPath, .zero, nil)
+        UIGraphicsBeginPDFContextToData(pdfData, .zero, nil)
+        var currentRange = NSRange(location: 0, length: 0)
+        var currentPage = 0
+        var done = false
+        repeat {
+            UIGraphicsBeginPDFPageWithInfo(CGRect(origin: .zero, size: CGSize(width: 612, height: 792)), nil)
+            currentPage += 1
+            drawPageNum(currentPage)
+            let frameAttributes = [kCTFrameProgressionAttributeName as NSAttributedStringKey: NSNumber(value: CTFrameProgression.rightToLeft.rawValue)] as CFDictionary
+            currentRange = self.updatePDFPage(currentPage: currentPage, textRange: currentRange, framesetter: framesetter, frameAttrs: frameAttributes)
+            if currentRange.location == currentText.length {
+                done = true
+            }
+            
+        } while(!done)
+        UIGraphicsEndPDFContext()
+        var fileUrl = URL(fileURLWithPath: documentPath)
+//        fileUrl = fileUrl.appendingPathComponent("ctext.pdf")
+        print("createPDF  fileUrl: ", fileUrl)
+//        return fileUrl
+        return pdfData
+    }
+//Define path for PDF file
+//    NSString * documentPath = [[dirPath objectAtIndex:0] stringByAppendingPathComponent:enterSubject.text];
+
+    func updatePDFPage(currentPage page: Int, textRange: NSRange, framesetter: CTFramesetter, frameAttrs: CFDictionary?) -> NSRange {
+        guard let context = UIGraphicsGetCurrentContext() else {
+            return NSRange(location: 0, length: 0)
+        }
+        context.textMatrix = .identity
+        let frameRect = CGRect(x: 72, y: 72, width: 468, height: 648)
+        let framePath = CGMutablePath()
+        framePath.addRect(frameRect)
+        let range = CFRangeMake(textRange.location, textRange.length)
+        let frame = CTFramesetterCreateFrame(framesetter, range, framePath, frameAttrs)
+        // Core Text draws from the bottom-left corner up, so flip
+        // the current transform prior to drawing.
+        context.translateBy(x: 0, y: 792)
+        context.scaleBy(x: 1.0, y: -1.0)
+        
+        CTFrameDraw(frame, context)
+        
+        var vrange = CTFrameGetVisibleStringRange(frame)
+        vrange.location += vrange.length
+        vrange.length = 0
+        
+        return NSRange(location: vrange.location, length: vrange.length)
     }
 }

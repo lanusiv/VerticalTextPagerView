@@ -33,6 +33,7 @@
 		4E542A8420D51D79007BE744 /* LYLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E542A8320D51D79007BE744 /* LYLabel.swift */; };
 		4E58DECD20B2609A000B501F /* VerticalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E58DECC20B2609A000B501F /* VerticalTextView.swift */; };
 		4E82FAC420AD19E500C80EDA /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E82FAC320AD19E500C80EDA /* SelectionView.swift */; };
+		4E9C975E211008200092D6F8 /* demo1.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E9C975D211008200092D6F8 /* demo1.gif */; };
 		4EA1606120A1491800A4E3F5 /* CTSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */; };
 		4EA1606220A1491800A4E3F5 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605D20A1491800A4E3F5 /* DemoData.swift */; };
 		4EA1606320A1491800A4E3F5 /* CTView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA1605E20A1491800A4E3F5 /* CTView.swift */; };
@@ -79,6 +80,7 @@
 		4E542A8320D51D79007BE744 /* LYLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LYLabel.swift; sourceTree = "<group>"; };
 		4E58DECC20B2609A000B501F /* VerticalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalTextView.swift; sourceTree = "<group>"; };
 		4E82FAC320AD19E500C80EDA /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
+		4E9C975D211008200092D6F8 /* demo1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = demo1.gif; sourceTree = "<group>"; };
 		4EA1605C20A1491800A4E3F5 /* CTSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CTSelectionView.swift; path = "Text Classes/CTSelectionView.swift"; sourceTree = "<group>"; };
 		4EA1605D20A1491800A4E3F5 /* DemoData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DemoData.swift; path = "Text Classes/DemoData.swift"; sourceTree = "<group>"; };
 		4EA1605E20A1491800A4E3F5 /* CTView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CTView.swift; path = "Text Classes/CTView.swift"; sourceTree = "<group>"; };
@@ -155,10 +157,20 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		4E9C975C2110065D0092D6F8 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				4E9C975D211008200092D6F8 /* demo1.gif */,
+			);
+			name = Demo;
+			path = VerticalTextPagerView;
+			sourceTree = "<group>";
+		};
 		4EC1050D20A1475F00AE51F1 = {
 			isa = PBXGroup;
 			children = (
 				4EC1051820A1475F00AE51F1 /* VerticalTextPagerView */,
+				4E9C975C2110065D0092D6F8 /* Demo */,
 				4EC1051720A1475F00AE51F1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -294,6 +306,7 @@
 				4E24B5A120A14BC3001273E2 /* demo2.txt in Resources */,
 				4E24B5A720A14BC3001273E2 /* Splash.png in Resources */,
 				4E24B5B920A14C26001273E2 /* 003.gif in Resources */,
+				4E9C975E211008200092D6F8 /* demo1.gif in Resources */,
 				4E24B5A620A14BC3001273E2 /* Splash.xml in Resources */,
 				4E24B59E20A14BC3001273E2 /* Credits.xml in Resources */,
 				4E24B5A420A14BC3001273E2 /* NSAttributedString Reference.xml in Resources */,
