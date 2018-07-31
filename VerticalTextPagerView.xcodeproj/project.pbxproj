@@ -163,14 +163,12 @@
 				4E9C975D211008200092D6F8 /* demo1.gif */,
 			);
 			name = Demo;
-			path = VerticalTextPagerView;
 			sourceTree = "<group>";
 		};
 		4EC1050D20A1475F00AE51F1 = {
 			isa = PBXGroup;
 			children = (
 				4EC1051820A1475F00AE51F1 /* VerticalTextPagerView */,
-				4E9C975C2110065D0092D6F8 /* Demo */,
 				4EC1051720A1475F00AE51F1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -196,6 +194,7 @@
 				4EC1051D20A1475F00AE51F1 /* Main.storyboard */,
 				4EC1052C20A1489500AE51F1 /* Text Classes */,
 				4EC1052B20A1477200AE51F1 /* Supporting Files */,
+				4E9C975C2110065D0092D6F8 /* Demo */,
 				4E24B59120A14B67001273E2 /* Resources */,
 			);
 			path = VerticalTextPagerView;
