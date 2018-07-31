@@ -8,4 +8,4 @@ iOS vertical text layout demo, by customizing CoreText
 ### 4. 分享pdf
 
 
-![image](https://github.com/lanusiv/VerticalTextPagerView/Demos/demo1.gif)
+![image](https://github.com/lanusiv/VerticalTextPagerView/tree/master/VerticalTextPagerView/Demos/demo1.gif)
